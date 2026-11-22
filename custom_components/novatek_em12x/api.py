@@ -69,6 +69,7 @@ class EMApiClient:
         self._session = session
         self._sid: str | None = None
         self._lock = asyncio.Lock()
+        self._unsupported: set[str] = set()
 
     @property
     def base_url(self) -> str:
@@ -163,8 +164,15 @@ class EMApiClient:
 
     async def get_many(self, params: list[str] | tuple[str, ...]) -> dict[str, Any]:
         result: dict[str, Any] = {}
-        if not params:
+        supported = [p for p in params if p not in self._unsupported]
+        if not supported:
             return result
+        if len(supported) != len(params):
+            _LOGGER.debug(
+                "Skipping unsupported parameters: %s",
+                sorted(set(params) - set(supported)),
+            )
+        params = supported
         path = "/api/all/get?" + "&".join(params)
         data = await self._sid_request(path)
         if data.get("STATUS") == "OK" and all(param in data for param in params):
@@ -177,7 +185,13 @@ class EMApiClient:
             try:
                 result[param] = await self.get(param)
             except EMApiStatusError as err:
-                _LOGGER.warning("Parameter %s unavailable: %s", param, err.status)
+                if param not in self._unsupported:
+                    self._unsupported.add(param)
+                    _LOGGER.warning(
+                        "Parameter %s unavailable and will be skipped: %s",
+                        param,
+                        err.status,
+                    )
         return result
 
     async def set_setting(self, param: str, value: Any) -> None:
