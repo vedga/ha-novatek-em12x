@@ -90,10 +90,18 @@
         "name": "Device time"
       },
       "ntp_synced": {
-        "name": "NTP synced"
+        "name": "NTP synced",
+        "state": {
+          "on": "Synced",
+          "off": "Not synced"
+        }
       },
       "cloud_synced": {
-        "name": "Cloud synced"
+        "name": "Cloud synced",
+        "state": {
+          "on": "Synced",
+          "off": "Not synced"
+        }
       },
       "cloud_status": {
         "name": "Cloud status"

@@ -158,12 +158,16 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="ntp_synced",
         translation_key="ntp_synced",
+        device_class=SensorDeviceClass.ENUM,
+        options=["on", "off"],
         entity_category=EntityCategory.DIAGNOSTIC,
         icon="mdi:check-network",
     ),
     SensorEntityDescription(
         key="cloud_synced",
         translation_key="cloud_synced",
+        device_class=SensorDeviceClass.ENUM,
+        options=["on", "off"],
         entity_category=EntityCategory.DIAGNOSTIC,
         icon="mdi:cloud-check-outline",
     ),
