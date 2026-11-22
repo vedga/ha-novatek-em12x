@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from homeassistant.const import CONF_HOST
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -27,4 +28,9 @@ class NovatekEMEntity(CoordinatorEntity[NovatekEMCoordinator]):
             manufacturer=MANUFACTURER,
             model=MODEL_NAMES.get(entry.data.get("device_id"), "EM"),
             sw_version=entry.data.get("sw_version"),
+            configuration_url=(
+                f"http://{entry.data[CONF_HOST]}"
+                if entry.data.get(CONF_HOST)
+                else None
+            ),
         )
