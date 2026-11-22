@@ -53,7 +53,17 @@ class NovatekEMCountApvSelect(NovatekEMCountAppSelectBase):
         value = self.coordinator.data.settings.get(self._param)
         if value is None:
             return None
-        return str(int(value))
+        try:
+            option = str(int(value))
+        except (TypeError, ValueError):
+            _LOGGER.warning("Unexpected value for %s: %r", self._param, value)
+            return None
+        if option not in self.options:
+            _LOGGER.warning(
+                "Value %s of %s is not a known option", option, self._param
+            )
+            return None
+        return option
 
     async def async_select_option(self, option: str) -> None:
         await self._set(int(option))
