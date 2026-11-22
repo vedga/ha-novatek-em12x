@@ -81,22 +81,18 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         except EMError as err:
             _LOGGER.warning("Clock sync failed: %s", err)
 
-    async def refresh_settings(self) -> dict[str, Any]:
+    async def refresh_settings(self) -> tuple[dict[str, Any], dict[str, Any]]:
+        settings: dict[str, Any] = self.data.settings if self.data else {}
+        cloud: dict[str, Any] = self.data.cloud if self.data else {}
         try:
             settings = await self.client.get_many(SETTING_PARAMS)
         except EMError as err:
             _LOGGER.warning("Failed to refresh settings: %s", err)
-            return self.data.settings if self.data else {}
-        cloud: dict[str, Any] = {}
         try:
             cloud = await self.client.cloud_info()
         except EMError as err:
             _LOGGER.debug("cloud_info unavailable: %s", err)
-        if self.data:
-            self.data.settings = settings
-            self.data.cloud = cloud
-            self.async_update_listeners()
-        return settings
+        return settings, cloud
 
     async def _async_update_data(self) -> EMData:
         try:
@@ -106,8 +102,9 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
 
         self._poll_count += 1
         settings: dict[str, Any] = self.data.settings if self.data else {}
+        cloud: dict[str, Any] = self.data.cloud if self.data else {}
         if not settings or self._poll_count % DEFAULT_SETTINGS_EVERY == 0:
-            settings = await self.refresh_settings()
+            settings, cloud = await self.refresh_settings()
 
         await self._maybe_sync_time()
-        return EMData(measurements=measurements, settings=settings)
+        return EMData(measurements=measurements, settings=settings, cloud=cloud)
