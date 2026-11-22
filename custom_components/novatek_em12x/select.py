@@ -65,6 +65,7 @@ class NovatekEMCountApvSelect(NovatekEMCountAppSelectBase):
             await client.set_setting(self._param, value)
         except EMError as err:
             _LOGGER.error("Failed to set %s: %s", self._param, err)
+            await self.coordinator.async_request_refresh()
             return
         if self.coordinator.data:
             self.coordinator.data.settings[self._param] = value
@@ -100,6 +101,7 @@ class NovatekEMCurrencySelect(NovatekEMCountAppSelectBase):
             await client.set_setting("cost_unit", index)
         except EMError as err:
             _LOGGER.error("Failed to set cost_unit: %s", err)
+            await self.coordinator.async_request_refresh()
             return
         if self.coordinator.data:
             self.coordinator.data.settings["cost_unit"] = index

@@ -109,6 +109,7 @@ class NovatekEMRelaySwitch(NovatekEMEntity, SwitchEntity):
             await client.ctrl(on)
         except EMError as err:
             _LOGGER.error("Relay control failed: %s", err)
+            await self.coordinator.async_request_refresh()
             return
         await self.coordinator.async_request_refresh()
 
@@ -148,6 +149,7 @@ class NovatekEMSettingSwitch(NovatekEMEntity, SwitchEntity):
             await client.set_setting(self._param, int(on))
         except EMError as err:
             _LOGGER.error("Failed to set %s: %s", self._param, err)
+            await self.coordinator.async_request_refresh()
             return
         if self.coordinator.data:
             self.coordinator.data.settings[self._param] = int(on)

@@ -57,6 +57,7 @@ class NovatekEMDateTimeEntity(NovatekEMEntity, DateTimeEntity):
             await client.set_setting(self._param, timestamp)
         except EMError as err:
             _LOGGER.error("Failed to set %s: %s", self._param, err)
+            await self.coordinator.async_request_refresh()
             return
         if self.coordinator.data:
             self.coordinator.data.settings[self._param] = timestamp
