@@ -102,6 +102,7 @@ class EMApiClient:
         if not sid:
             raise EMAuthError("Device did not return a session id")
         self._sid = sid
+        self._unsupported.clear()
         _LOGGER.debug("Logged in to %s (sid=%s)", self._host, sid)
         return sid
 
