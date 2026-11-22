@@ -1,0 +1,16 @@
+{
+  "domain": "novatek_em12x",
+  "name": "Novatek Electro EM-12x",
+  "codeowners": [
+    "@novatek-em"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/novatek-em/ha-novatek-em12x",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/novatek-em/ha-novatek-em12x/issues",
+  "loggers": [
+    "novatek_em12x"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,302 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Подключение к счётчику электроэнергии Novatek Electro EM-125/EM-126T/EM-129.",
+        "data": {
+          "host": "Адрес устройства",
+          "password": "Пароль устройства"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не удалось подключиться",
+      "invalid_interval": "Недопустимый интервал опроса",
+      "invalid_auth": "Authentication failed"
+    },
+    "abort": {
+      "already_configured": "Устройство уже настроено"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Интервал опроса (секунды)",
+          "sync_time": "Синхронизировать часы устройства с Home Assistant",
+          "password": "Пароль устройства (оставьте пустым, чтобы не менять)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Интервал должен быть от 5 до 300 секунд"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "voltage": {
+        "name": "Напряжение"
+      },
+      "current": {
+        "name": "Ток"
+      },
+      "active_power": {
+        "name": "Активная мощность"
+      },
+      "apparent_power": {
+        "name": "Полная мощность"
+      },
+      "power_factor": {
+        "name": "Коэффициент мощности"
+      },
+      "frequency": {
+        "name": "Частота"
+      },
+      "temperature": {
+        "name": "Температура"
+      },
+      "energy_active": {
+        "name": "Активная энергия"
+      },
+      "energy_apparent": {
+        "name": "Полная энергия"
+      },
+      "energy_active_daily": {
+        "name": "Энергия за сутки"
+      },
+      "energy_active_weekly": {
+        "name": "Энергия за неделю"
+      },
+      "energy_active_monthly": {
+        "name": "Энергия за месяц"
+      },
+      "reclose_countdown": {
+        "name": "До повторного включения"
+      },
+      "device_time": {
+        "name": "Время устройства"
+      },
+      "ntp_synced": {
+        "name": "Синхронизация NTP"
+      },
+      "cloud_synced": {
+        "name": "Синхронизация с облаком"
+      },
+      "cloud_status": {
+        "name": "Статус облака"
+      },
+      "cloud_last_error": {
+        "name": "Последняя ошибка облака"
+      },
+      "cloud_server": {
+        "name": "Сервер облака"
+      }
+    },
+    "binary_sensor": {
+      "fault_overvoltage": {
+        "name": "Перенапряжение"
+      },
+      "fault_undervoltage": {
+        "name": "Пониженное напряжение"
+      },
+      "fault_voltage_over_290v": {
+        "name": "Напряжение выше 290 В"
+      },
+      "fault_voltage_apv_limit": {
+        "name": "Лимит АПВ по напряжению"
+      },
+      "fault_overcurrent": {
+        "name": "Перегрузка по току"
+      },
+      "fault_current_over_17a": {
+        "name": "Ток выше 17 А"
+      },
+      "fault_current_apv_limit": {
+        "name": "Лимит АПВ по току"
+      },
+      "fault_overpower": {
+        "name": "Перегрузка по мощности"
+      },
+      "fault_power_apv_limit": {
+        "name": "Лимит АПВ по мощности"
+      },
+      "fault_temperature_sensor_fault": {
+        "name": "Неисправность датчика температуры"
+      },
+      "fault_temperature_sensor_open": {
+        "name": "Обрыв датчика температуры"
+      },
+      "fault_temperature_sensor_short": {
+        "name": "Замыкание датчика температуры"
+      },
+      "fault_rtc_fault": {
+        "name": "Сбой часов"
+      },
+      "fault_relay_fault": {
+        "name": "Неисправность реле"
+      },
+      "fault_on_time_limit_blocked": {
+        "name": "Блокировка по времени работы"
+      },
+      "fault_overfrequency": {
+        "name": "Повышенная частота"
+      },
+      "fault_underfrequency": {
+        "name": "Пониженная частота"
+      },
+      "fault_frequency_apv_limit": {
+        "name": "Лимит АПВ по частоте"
+      },
+      "fault_not_calibrated": {
+        "name": "Нет калибровки"
+      },
+      "fault_settings_damaged": {
+        "name": "Повреждение настроек"
+      },
+      "panel_locked": {
+        "name": "Панель заблокирована"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Реле нагрузки"
+      },
+      "pow_enable": {
+        "name": "Защита по мощности"
+      },
+      "freq_enable": {
+        "name": "Защита по частоте"
+      },
+      "dst_enable": {
+        "name": "Летнее время"
+      },
+      "hctrl_enable": {
+        "name": "Режим отпуск"
+      },
+      "sync_sntp_enable": {
+        "name": "NTP-синхронизация"
+      },
+      "wifi_wdt_enable": {
+        "name": "Сторожевой таймер Wi-Fi"
+      }
+    },
+    "number": {
+      "volt_leveloff_hi": {
+        "name": "Верхний порог напряжения"
+      },
+      "volt_leveloff_lo": {
+        "name": "Нижний порог напряжения"
+      },
+      "volt_level_hys": {
+        "name": "Гистерезис напряжения"
+      },
+      "volt_timeoff_hi": {
+        "name": "Задержка отключения по верхнему порогу"
+      },
+      "volt_timeoff_lo": {
+        "name": "Задержка отключения по нижнему порогу"
+      },
+      "volt_timeon_apv": {
+        "name": "Задержка АПВ по напряжению"
+      },
+      "cur_leveloff": {
+        "name": "Порог отключения по току"
+      },
+      "cur_timeoff": {
+        "name": "Задержка отключения по току"
+      },
+      "cur_timeon_apv": {
+        "name": "Задержка АПВ по току"
+      },
+      "pow_leveloff": {
+        "name": "Порог отключения по мощности"
+      },
+      "pow_timeoff": {
+        "name": "Задержка отключения по мощности"
+      },
+      "pow_timeon_apv": {
+        "name": "Задержка АПВ по мощности"
+      },
+      "freq_leveloff_hi": {
+        "name": "Верхний порог частоты"
+      },
+      "freq_leveloff_lo": {
+        "name": "Нижний порог частоты"
+      },
+      "freq_timeoff": {
+        "name": "Задержка отключения по частоте"
+      },
+      "freq_timeon_apv": {
+        "name": "Задержка АПВ по частоте"
+      },
+      "apv_reset_time": {
+        "name": "Сброс счётчиков АПВ"
+      },
+      "on_time_limit": {
+        "name": "Ограничение времени работы"
+      },
+      "lock_panel_time": {
+        "name": "Блокировка панели"
+      },
+      "time_corr": {
+        "name": "Коррекция хода часов"
+      },
+      "led_intens": {
+        "name": "Яркость индикации"
+      },
+      "cost_energy": {
+        "name": "Тариф"
+      },
+      "sync_sntp_port": {
+        "name": "Порт NTP-сервера"
+      },
+      "sync_sntp_time": {
+        "name": "Период NTP-синхронизации"
+      }
+    },
+    "select": {
+      "volt_count_apv": {
+        "name": "Попыток АПВ по напряжению"
+      },
+      "cur_count_apv": {
+        "name": "Попыток АПВ по току"
+      },
+      "pow_count_apv": {
+        "name": "Попыток АПВ по мощности"
+      },
+      "freq_count_apv": {
+        "name": "Попыток АПВ по частоте"
+      },
+      "cost_unit": {
+        "name": "Валюта"
+      }
+    },
+    "button": {
+      "energy_reset": {
+        "name": "Сбросить счётчики энергии"
+      },
+      "set_time": {
+        "name": "Установить время из Home Assistant"
+      },
+      "ntp_sync": {
+        "name": "Запустить NTP-синхронизацию"
+      },
+      "reboot": {
+        "name": "Перезагрузить устройство"
+      }
+    },
+    "datetime": {
+      "hctrl_from": {
+        "name": "Начало отпуска"
+      },
+      "hctrl_to": {
+        "name": "Конец отпуска"
+      }
+    },
+    "text": {
+      "sync_sntp_address": {
+        "name": "Адрес NTP-сервера"
+      }
+    }
+  }
+}

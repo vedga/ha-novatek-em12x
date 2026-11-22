@@ -1,0 +1,302 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Connect to a Novatek Electro EM-125/EM-126T/EM-129 energy meter.",
+        "data": {
+          "host": "Host",
+          "password": "Device password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_interval": "Invalid poll interval",
+      "invalid_auth": "Authentication failed"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Poll interval (seconds)",
+          "sync_time": "Synchronize device clock with Home Assistant",
+          "password": "Device password (leave empty to keep)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Interval must be between 5 and 300 seconds"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "voltage": {
+        "name": "Voltage"
+      },
+      "current": {
+        "name": "Current"
+      },
+      "active_power": {
+        "name": "Active power"
+      },
+      "apparent_power": {
+        "name": "Apparent power"
+      },
+      "power_factor": {
+        "name": "Power factor"
+      },
+      "frequency": {
+        "name": "Frequency"
+      },
+      "temperature": {
+        "name": "Temperature"
+      },
+      "energy_active": {
+        "name": "Energy active"
+      },
+      "energy_apparent": {
+        "name": "Energy apparent"
+      },
+      "energy_active_daily": {
+        "name": "Energy today"
+      },
+      "energy_active_weekly": {
+        "name": "Energy this week"
+      },
+      "energy_active_monthly": {
+        "name": "Energy this month"
+      },
+      "reclose_countdown": {
+        "name": "Reclose countdown"
+      },
+      "device_time": {
+        "name": "Device time"
+      },
+      "ntp_synced": {
+        "name": "NTP synced"
+      },
+      "cloud_synced": {
+        "name": "Cloud synced"
+      },
+      "cloud_status": {
+        "name": "Cloud status"
+      },
+      "cloud_last_error": {
+        "name": "Cloud last error"
+      },
+      "cloud_server": {
+        "name": "Cloud server"
+      }
+    },
+    "binary_sensor": {
+      "fault_overvoltage": {
+        "name": "Overvoltage"
+      },
+      "fault_undervoltage": {
+        "name": "Undervoltage"
+      },
+      "fault_voltage_over_290v": {
+        "name": "Voltage above 290 V"
+      },
+      "fault_voltage_apv_limit": {
+        "name": "Voltage reclose limit"
+      },
+      "fault_overcurrent": {
+        "name": "Overcurrent"
+      },
+      "fault_current_over_17a": {
+        "name": "Current above 17 A"
+      },
+      "fault_current_apv_limit": {
+        "name": "Current reclose limit"
+      },
+      "fault_overpower": {
+        "name": "Overpower"
+      },
+      "fault_power_apv_limit": {
+        "name": "Power reclose limit"
+      },
+      "fault_temperature_sensor_fault": {
+        "name": "Temperature sensor fault"
+      },
+      "fault_temperature_sensor_open": {
+        "name": "Temperature sensor open"
+      },
+      "fault_temperature_sensor_short": {
+        "name": "Temperature sensor short"
+      },
+      "fault_rtc_fault": {
+        "name": "Clock fault"
+      },
+      "fault_relay_fault": {
+        "name": "Relay fault"
+      },
+      "fault_on_time_limit_blocked": {
+        "name": "Blocked by runtime limit"
+      },
+      "fault_overfrequency": {
+        "name": "Overfrequency"
+      },
+      "fault_underfrequency": {
+        "name": "Underfrequency"
+      },
+      "fault_frequency_apv_limit": {
+        "name": "Frequency reclose limit"
+      },
+      "fault_not_calibrated": {
+        "name": "Not calibrated"
+      },
+      "fault_settings_damaged": {
+        "name": "Settings damaged"
+      },
+      "panel_locked": {
+        "name": "Panel locked"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Load relay"
+      },
+      "pow_enable": {
+        "name": "Power protection"
+      },
+      "freq_enable": {
+        "name": "Frequency protection"
+      },
+      "dst_enable": {
+        "name": "Daylight saving time"
+      },
+      "hctrl_enable": {
+        "name": "Vacation mode"
+      },
+      "sync_sntp_enable": {
+        "name": "NTP sync"
+      },
+      "wifi_wdt_enable": {
+        "name": "Wi-Fi watchdog"
+      }
+    },
+    "number": {
+      "volt_leveloff_hi": {
+        "name": "Overvoltage cutoff"
+      },
+      "volt_leveloff_lo": {
+        "name": "Undervoltage cutoff"
+      },
+      "volt_level_hys": {
+        "name": "Voltage hysteresis"
+      },
+      "volt_timeoff_hi": {
+        "name": "Overvoltage trip delay"
+      },
+      "volt_timeoff_lo": {
+        "name": "Undervoltage trip delay"
+      },
+      "volt_timeon_apv": {
+        "name": "Voltage reclose delay"
+      },
+      "cur_leveloff": {
+        "name": "Overcurrent cutoff"
+      },
+      "cur_timeoff": {
+        "name": "Overcurrent trip delay"
+      },
+      "cur_timeon_apv": {
+        "name": "Overcurrent reclose delay"
+      },
+      "pow_leveloff": {
+        "name": "Overpower cutoff"
+      },
+      "pow_timeoff": {
+        "name": "Overpower trip delay"
+      },
+      "pow_timeon_apv": {
+        "name": "Overpower reclose delay"
+      },
+      "freq_leveloff_hi": {
+        "name": "Overfrequency cutoff"
+      },
+      "freq_leveloff_lo": {
+        "name": "Underfrequency cutoff"
+      },
+      "freq_timeoff": {
+        "name": "Frequency trip delay"
+      },
+      "freq_timeon_apv": {
+        "name": "Frequency reclose delay"
+      },
+      "apv_reset_time": {
+        "name": "Reclose counters reset time"
+      },
+      "on_time_limit": {
+        "name": "Runtime limit"
+      },
+      "lock_panel_time": {
+        "name": "Panel lock time"
+      },
+      "time_corr": {
+        "name": "Clock correction"
+      },
+      "led_intens": {
+        "name": "Display brightness"
+      },
+      "cost_energy": {
+        "name": "Energy tariff"
+      },
+      "sync_sntp_port": {
+        "name": "NTP server port"
+      },
+      "sync_sntp_time": {
+        "name": "NTP sync period"
+      }
+    },
+    "select": {
+      "volt_count_apv": {
+        "name": "Voltage reclose attempts"
+      },
+      "cur_count_apv": {
+        "name": "Current reclose attempts"
+      },
+      "pow_count_apv": {
+        "name": "Power reclose attempts"
+      },
+      "freq_count_apv": {
+        "name": "Frequency reclose attempts"
+      },
+      "cost_unit": {
+        "name": "Currency"
+      }
+    },
+    "button": {
+      "energy_reset": {
+        "name": "Reset energy counters"
+      },
+      "set_time": {
+        "name": "Set clock from Home Assistant"
+      },
+      "ntp_sync": {
+        "name": "Trigger NTP sync"
+      },
+      "reboot": {
+        "name": "Reboot device"
+      }
+    },
+    "datetime": {
+      "hctrl_from": {
+        "name": "Vacation start"
+      },
+      "hctrl_to": {
+        "name": "Vacation end"
+      }
+    },
+    "text": {
+      "sync_sntp_address": {
+        "name": "NTP server address"
+      }
+    }
+  }
+}
