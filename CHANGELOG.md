@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1
+
+- add a local brand icon (`brand/icon.png`) and make the HACS validation run
+  without ignores (required for the default HACS list)
+- CI: HACS action + hassfest
+
 ## 1.3.0
 
 - fix: cloud diagnostic sensors no longer drop to unknown between polls
