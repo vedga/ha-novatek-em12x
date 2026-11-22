@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.3.0
+
+- fix: cloud diagnostic sensors no longer drop to unknown between polls
+- reauth flow for a changed device password (verified by MAC)
+- config flow reports an invalid password separately from connection errors
+- entities refresh from the device after a failed write instead of keeping
+  the optimistic value until the next settings poll
+- select entities ignore values outside the option list
+- NTP/cloud sync sensors are proper enums with translated states
+- tariff/cost sensors: display precision; diagnostics download support
+- device card links to the meter web interface
+- unsupported parameters are remembered (warn once) and reset on login
+- small cleanups
+- docs: supported models and auth-prefix caveat, Energy dashboard walkthrough,
+  debug logging recipes, cloud field availability, corrected entity counts,
+  CHANGELOG
+
 ## 1.2.2
 
 - cloud server address (`cloud_address`, hex text) and port (`cloud_port`) entities,
