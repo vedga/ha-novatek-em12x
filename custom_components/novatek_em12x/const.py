@@ -102,6 +102,25 @@ COST_UNITS = (
     "USD",
 )
 
+ISO_CURRENCIES = frozenset(
+    {
+        "BGN",
+        "CZK",
+        "CHF",
+        "EUR",
+        "GBP",
+        "INR",
+        "KZT",
+        "MDL",
+        "PLN",
+        "RUB",
+        "RON",
+        "SEK",
+        "UAH",
+        "USD",
+    }
+)
+
 COUNT_APV_FOREVER = 65535
 COUNT_APV_OPTIONS = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, COUNT_APV_FOREVER)
 
@@ -132,3 +151,36 @@ STATUS_NTP_SYNCED_BIT = 9
 STATUS_CLOUD_SYNCED_BIT = 10
 STATUS_PANEL_LOCKED_BIT = 11
 STATUS_RELAY_BIT = 4
+
+
+def currency_code(index: int | str) -> str | None:
+    """Return the currency code for a device currency index."""
+    try:
+        value = int(index)
+    except (TypeError, ValueError):
+        return None
+    if 0 <= value < len(COST_UNITS):
+        return COST_UNITS[value]
+    return None
+
+
+def tariff_value(tariff_milli: int | str | None) -> float | None:
+    """Convert the device tariff (currency x1000 per kWh) to a price per kWh."""
+    if tariff_milli is None:
+        return None
+    try:
+        return round(int(tariff_milli) / 1000, 4)
+    except (TypeError, ValueError):
+        return None
+
+
+def energy_cost(
+    energy_wh: int | str | None, tariff_milli: int | str | None
+) -> float | None:
+    """Compute cost for an energy counter, like the device web UI does."""
+    if energy_wh is None or tariff_milli is None:
+        return None
+    try:
+        return round((int(energy_wh) / 1000) * (int(tariff_milli) / 1000), 3)
+    except (TypeError, ValueError):
+        return None

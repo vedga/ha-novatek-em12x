@@ -24,7 +24,14 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.util import dt as dt_util
 
-from .const import STATUS_CLOUD_SYNCED_BIT, STATUS_NTP_SYNCED_BIT
+from .const import (
+    ISO_CURRENCIES,
+    STATUS_CLOUD_SYNCED_BIT,
+    STATUS_NTP_SYNCED_BIT,
+    currency_code,
+    energy_cost,
+    tariff_value,
+)
 from .coordinator import NovatekEMCoordinator
 from .entity import NovatekEMEntity
 
@@ -178,12 +185,44 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         icon="mdi:server",
     ),
+    SensorEntityDescription(
+        key="tariff",
+        translation_key="tariff",
+        icon="mdi:cash",
+    ),
+    SensorEntityDescription(
+        key="cost_total",
+        translation_key="cost_total",
+        icon="mdi:cash-multiple",
+    ),
+    SensorEntityDescription(
+        key="cost_daily",
+        translation_key="cost_daily",
+        icon="mdi:cash-clock",
+    ),
+    SensorEntityDescription(
+        key="cost_weekly",
+        translation_key="cost_weekly",
+        icon="mdi:cash-clock",
+    ),
+    SensorEntityDescription(
+        key="cost_monthly",
+        translation_key="cost_monthly",
+        icon="mdi:cash-clock",
+    ),
 )
 
 CLOUD_SENSORS = {
     "cloud_status": "STAT",
     "cloud_last_error": "LERR",
     "cloud_server": "SERV",
+}
+
+COST_COUNTERS = {
+    "cost_total": "enrga_msr",
+    "cost_daily": "enrga_d_msr",
+    "cost_weekly": "enrga_w_msr",
+    "cost_monthly": "enrga_m_msr",
 }
 
 SCALES = {
@@ -221,6 +260,39 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
         self.entity_description = description
 
     @property
+    def _currency(self) -> str | None:
+        return currency_code(self.coordinator.data.settings.get("cost_unit", ""))
+
+    @property
+    def native_unit_of_measurement(self) -> str | None:
+        key = self.entity_description.key
+        if key == "tariff":
+            code = self._currency
+            return f"{code}/kWh" if code else None
+        if key in COST_COUNTERS:
+            return self._currency
+        return self.entity_description.native_unit_of_measurement
+
+    @property
+    def device_class(self) -> SensorDeviceClass | None:
+        key = self.entity_description.key
+        if key in COST_COUNTERS:
+            code = self._currency
+            return SensorDeviceClass.MONETARY if code in ISO_CURRENCIES else None
+        return self.entity_description.device_class
+
+    @property
+    def state_class(self) -> SensorStateClass | None:
+        key = self.entity_description.key
+        if key in COST_COUNTERS:
+            return (
+                SensorStateClass.TOTAL
+                if self._currency in ISO_CURRENCIES
+                else None
+            )
+        return self.entity_description.state_class
+
+    @property
     def native_value(self) -> str | float | datetime | None:
         key = self.entity_description.key
         measurements = self.coordinator.data.measurements
@@ -252,6 +324,13 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if value is None:
                 return None
             return str(value)
+        if key == "tariff":
+            return tariff_value(self.coordinator.data.settings.get("cost_energy"))
+        if key in COST_COUNTERS:
+            return energy_cost(
+                measurements.get(COST_COUNTERS[key]),
+                self.coordinator.data.settings.get("cost_energy"),
+            )
         value = measurements.get(key)
         if value is None:
             return None

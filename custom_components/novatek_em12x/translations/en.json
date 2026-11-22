@@ -97,6 +97,21 @@
       },
       "cloud_server": {
         "name": "Cloud server"
+      },
+      "tariff": {
+        "name": "Tariff"
+      },
+      "cost_total": {
+        "name": "Cost total"
+      },
+      "cost_daily": {
+        "name": "Cost today"
+      },
+      "cost_weekly": {
+        "name": "Cost this week"
+      },
+      "cost_monthly": {
+        "name": "Cost this month"
       }
     },
     "binary_sensor": {

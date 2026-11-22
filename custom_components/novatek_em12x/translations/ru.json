@@ -97,6 +97,21 @@
       },
       "cloud_server": {
         "name": "Сервер облака"
+      },
+      "tariff": {
+        "name": "Тариф"
+      },
+      "cost_total": {
+        "name": "Стоимость всего"
+      },
+      "cost_daily": {
+        "name": "Стоимость за сутки"
+      },
+      "cost_weekly": {
+        "name": "Стоимость за неделю"
+      },
+      "cost_monthly": {
+        "name": "Стоимость за месяц"
       }
     },
     "binary_sensor": {

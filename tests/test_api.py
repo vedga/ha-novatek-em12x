@@ -194,3 +194,19 @@ async def test_batch_relogin_after_reboot(device, session):
     dev.sids.clear()
     data = await client.get_many(("volt_msr", "cur_msr", "tempr_msr"))
     assert data["volt_msr"] == 2287
+
+
+def test_cost_helpers():
+    from novatek_em12x.const import currency_code, energy_cost, tariff_value
+
+    assert currency_code(13) == "RUB"
+    assert currency_code(1) == "BGN"
+    assert currency_code(99) is None
+    assert currency_code(None) is None
+    assert tariff_value(1000) == 1.0
+    assert tariff_value(2500) == 2.5
+    assert tariff_value(None) is None
+    assert energy_cost(12345, 1000) == 12.345
+    assert energy_cost(500, 2500) == 1.25
+    assert energy_cost(None, 1000) is None
+    assert energy_cost(1000, None) is None

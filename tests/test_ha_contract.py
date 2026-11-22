@@ -11,6 +11,7 @@ HA_ENUM_WHITELIST = {
     "SensorDeviceClass.CURRENT",
     "SensorDeviceClass.ENERGY",
     "SensorDeviceClass.FREQUENCY",
+    "SensorDeviceClass.MONETARY",
     "SensorDeviceClass.POWER",
     "SensorDeviceClass.POWER_FACTOR",
     "SensorDeviceClass.TEMPERATURE",
