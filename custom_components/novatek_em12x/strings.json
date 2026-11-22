@@ -200,6 +200,9 @@
       },
       "wifi_wdt_enable": {
         "name": "Wi-Fi watchdog"
+      },
+      "cloud_enable": {
+        "name": "Remote access via cloud"
       }
     },
     "number": {

@@ -200,6 +200,9 @@
       },
       "wifi_wdt_enable": {
         "name": "Сторожевой таймер Wi-Fi"
+      },
+      "cloud_enable": {
+        "name": "Удалённый доступ через облако"
       }
     },
     "number": {

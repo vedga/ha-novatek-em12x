@@ -32,6 +32,7 @@ STATE = {
     "led_intens": 12,
     "cost_unit": 13,
     "cost_energy": 1000,
+    "cloud_enable": 1,
     "cur_leveloff": 630,
     "wifi_wdt_enable": 1,
 }

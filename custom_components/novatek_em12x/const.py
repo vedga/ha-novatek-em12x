@@ -79,6 +79,7 @@ SETTING_PARAMS = (
     "cost_energy",
     "cost_unit",
     "wifi_wdt_enable",
+    "cloud_enable",
 )
 
 COST_UNITS = (

@@ -57,6 +57,12 @@ SETTING_SWITCHES: dict[str, SwitchEntityDescription] = {
         entity_category=EntityCategory.CONFIG,
         icon="mdi:wifi-strength-alert-outline",
     ),
+    "cloud_enable": SwitchEntityDescription(
+        key="cloud_enable",
+        translation_key="cloud_enable",
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:cloud-upload-outline",
+    ),
 }
 
 
