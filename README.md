@@ -520,7 +520,7 @@ python scripts/live_device_check.py read|write_same|write_change|actions|events|
 
 - **Официальное описание Web API** (Novatek Electro, EM-125/EM-126T/EM-129, ред. 1.2):
   <https://novatek-electro.com/media/brander_product_attachmentscustom/w/e/webapi_em-125_126_129_ru_1_2.pdf>
-  (локальная копия выдержки: [`docs/webapi.pdf`](docs/webapi.pdf), текст: [`docs/webapi_spec.txt`](docs/webapi_spec.txt)).
+  (документация производителя, здесь не распространяется — только ссылка).
 - **Сайт производителя**: <https://novatek-electro.com>
 - Всё остальное в этом разделе — результат **эмпирической проверки на реальном
   EM-129** (прошивка `1.271.3.34`, `device_id=271`), а не цитаты из документации.
