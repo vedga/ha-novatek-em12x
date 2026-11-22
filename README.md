@@ -547,6 +547,6 @@ python scripts/live_device_check.py read|write_same|write_change|actions|events|
 
 ## Лицензия
 
-Код интеграции распространяется по лицензии **MIT** (см. [`LICENSE`](LICENSE)).
+Код интеграции распространяется по лицензии **MIT** (© 2026 vedga, см. [`LICENSE`](LICENSE)).
 Документация производителя (Web API Novatek Electro) не входит в репозиторий
 и остаётся собственностью правообладателя — см. ссылку в разделе «Источники».
