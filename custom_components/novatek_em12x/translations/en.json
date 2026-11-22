@@ -277,6 +277,9 @@
       },
       "sync_sntp_time": {
         "name": "NTP sync period"
+      },
+      "cloud_port": {
+        "name": "Cloud server port"
       }
     },
     "select": {
@@ -321,6 +324,9 @@
     "text": {
       "sync_sntp_address": {
         "name": "NTP server address"
+      },
+      "cloud_address": {
+        "name": "Cloud server address"
       }
     }
   }

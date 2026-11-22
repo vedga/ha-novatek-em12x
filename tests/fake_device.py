@@ -33,6 +33,8 @@ STATE = {
     "cost_unit": 13,
     "cost_energy": 1000,
     "cloud_enable": 1,
+    "cloud_address": "6d792e6f7665727669732e636f6d",
+    "cloud_port": 20504,
     "cur_leveloff": 630,
     "wifi_wdt_enable": 1,
 }

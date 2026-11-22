@@ -277,6 +277,9 @@
       },
       "sync_sntp_time": {
         "name": "Период NTP-синхронизации"
+      },
+      "cloud_port": {
+        "name": "Порт сервера облака"
       }
     },
     "select": {
@@ -321,6 +324,9 @@
     "text": {
       "sync_sntp_address": {
         "name": "Адрес NTP-сервера"
+      },
+      "cloud_address": {
+        "name": "Адрес сервера облака"
       }
     }
   }

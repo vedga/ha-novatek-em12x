@@ -31,6 +31,7 @@ class NumberSpec:
     unit: str | None
     to_device: float
     from_device: float
+    enabled_by: str | None = None
 
 
 NUMBER_SPECS: dict[str, NumberSpec] = {
@@ -58,6 +59,7 @@ NUMBER_SPECS: dict[str, NumberSpec] = {
     "cost_energy": NumberSpec("cost_energy", 0.001, 9999.999, 0.001, None, 1000, 0.001),
     "sync_sntp_port": NumberSpec("sync_sntp_port", 1, 65535, 1, None, 1, 1),
     "sync_sntp_time": NumberSpec("sync_sntp_time", 1, 24, 1, UnitOfTime.HOURS, 3600000, 1 / 3600000),
+    "cloud_port": NumberSpec("cloud_port", 1, 65535, 1, None, 1, 1, "cloud_enable"),
 }
 
 MIN_BY_PASS = {"on_time_limit": 0.0, "lock_panel_time": 0.0}
@@ -91,6 +93,16 @@ class NovatekEMNumberEntity(NovatekEMEntity, NumberEntity):
         self._attr_native_max_value = spec.max_value
         self._attr_native_step = spec.step
         self._attr_native_unit_of_measurement = spec.unit
+
+    @property
+    def available(self) -> bool:
+        if not super().available:
+            return False
+        if self._spec.enabled_by is not None:
+            return bool(
+                int(self.coordinator.data.settings.get(self._spec.enabled_by, 0) or 0)
+            )
+        return True
 
     @property
     def native_value(self) -> float | None:

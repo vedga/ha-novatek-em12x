@@ -13,13 +13,14 @@ from .entity import NovatekEMEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-TEXT_PARAMS = ("sync_sntp_address",)
+TEXT_PARAMS = (("sync_sntp_address", None), ("cloud_address", "cloud_enable"))
 
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     coordinator = entry.runtime_data.coordinator
     async_add_entities(
-        NovatekEMTextEntity(coordinator, param) for param in TEXT_PARAMS
+        NovatekEMTextEntity(coordinator, param, depends_on)
+        for param, depends_on in TEXT_PARAMS
     )
 
 
@@ -32,10 +33,24 @@ class NovatekEMTextEntity(NovatekEMEntity, TextEntity):
     _attr_pattern = None
     _attr_mode = TextMode.TEXT
 
-    def __init__(self, coordinator: NovatekEMCoordinator, param: str) -> None:
+    def __init__(
+        self,
+        coordinator: NovatekEMCoordinator,
+        param: str,
+        depends_on: str | None = None,
+    ) -> None:
         super().__init__(coordinator, f"text_{param}")
         self._param = param
+        self._depends_on = depends_on
         self._attr_translation_key = param
+
+    @property
+    def available(self) -> bool:
+        if not super().available:
+            return False
+        if self._depends_on is not None:
+            return bool(int(self.coordinator.data.settings.get(self._depends_on, 0) or 0))
+        return True
 
     @property
     def native_value(self) -> str:

@@ -80,6 +80,8 @@ SETTING_PARAMS = (
     "cost_unit",
     "wifi_wdt_enable",
     "cloud_enable",
+    "cloud_address",
+    "cloud_port",
 )
 
 COST_UNITS = (

@@ -210,3 +210,16 @@ def test_cost_helpers():
     assert energy_cost(500, 2500) == 1.25
     assert energy_cost(None, 1000) is None
     assert energy_cost(1000, None) is None
+
+
+async def test_cloud_address_and_port(device, session):
+    _dev, host = device
+    client = EMApiClient(host, PASSWORD, session)
+    assert await client.get("cloud_address") == "6d792e6f7665727669732e636f6d"
+    await client.set_setting("cloud_address", "6e74702e6c6f63616c")
+    assert await client.get("cloud_address") == "6e74702e6c6f63616c"
+    assert await client.get("cloud_port") == 20504
+    await client.set_setting("cloud_port", 1234)
+    assert await client.get("cloud_port") == "1234"
+    await client.set_setting("cloud_port", 20504)
+    await client.close()
