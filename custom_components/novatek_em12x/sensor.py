@@ -189,26 +189,31 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         key="tariff",
         translation_key="tariff",
         icon="mdi:cash",
+        suggested_display_precision=3,
     ),
     SensorEntityDescription(
         key="cost_total",
         translation_key="cost_total",
         icon="mdi:cash-multiple",
+        suggested_display_precision=2,
     ),
     SensorEntityDescription(
         key="cost_daily",
         translation_key="cost_daily",
         icon="mdi:cash-clock",
+        suggested_display_precision=2,
     ),
     SensorEntityDescription(
         key="cost_weekly",
         translation_key="cost_weekly",
         icon="mdi:cash-clock",
+        suggested_display_precision=2,
     ),
     SensorEntityDescription(
         key="cost_monthly",
         translation_key="cost_monthly",
         icon="mdi:cash-clock",
+        suggested_display_precision=2,
     ),
 )
 
