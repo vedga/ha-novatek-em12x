@@ -60,6 +60,7 @@ class NovatekEMCountApvSelect(NovatekEMCountAppSelectBase):
 
     async def _set(self, value: int) -> None:
         client = self.coordinator.entry.runtime_data.client
+        _LOGGER.debug("Select %s -> %s", self._param, value)
         try:
             await client.set_setting(self._param, value)
         except EMError as err:
@@ -94,6 +95,7 @@ class NovatekEMCurrencySelect(NovatekEMCountAppSelectBase):
     async def async_select_option(self, option: str) -> None:
         index = COST_UNITS.index(option)
         client = self.coordinator.entry.runtime_data.client
+        _LOGGER.debug("Select cost_unit -> %s (%s)", option, index)
         try:
             await client.set_setting("cost_unit", index)
         except EMError as err:

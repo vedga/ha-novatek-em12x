@@ -98,6 +98,7 @@ class NovatekEMRelaySwitch(NovatekEMEntity, SwitchEntity):
 
     async def _toggle(self, on: bool) -> None:
         client = self.coordinator.entry.runtime_data.client
+        _LOGGER.debug("Relay switch turned %s", "on" if on else "off")
         try:
             await client.ctrl(on)
         except EMError as err:
@@ -136,6 +137,7 @@ class NovatekEMSettingSwitch(NovatekEMEntity, SwitchEntity):
 
     async def _set(self, on: bool) -> None:
         client = self.coordinator.entry.runtime_data.client
+        _LOGGER.debug("Switch %s -> %s", self._param, int(on))
         try:
             await client.set_setting(self._param, int(on))
         except EMError as err:

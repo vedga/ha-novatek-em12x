@@ -181,6 +181,7 @@ class EMApiClient:
         return result
 
     async def set_setting(self, param: str, value: Any) -> None:
+        _LOGGER.debug("Set %s=%s", param, value)
         data = await self._sid_request(
             f"/api/settings/set?{param}={quote(str(value), safe='')}"
         )
@@ -189,6 +190,7 @@ class EMApiClient:
             raise EMApiStatusError(status or "NO_RESPONSE")
 
     async def ctrl(self, on: bool) -> None:
+        _LOGGER.debug("Relay command: %s", "on" if on else "off")
         data = await self._sid_request(f"/api/utils/ctrl?{'on' if on else 'off'}")
         status = data.get("STATUS")
         if status != "OK":
@@ -209,21 +211,25 @@ class EMApiClient:
         return data
 
     async def reboot(self) -> None:
+        _LOGGER.debug("Reboot command")
         await self._sid_request("/api/utils/reboot")
 
     async def energy_reset(self) -> None:
+        _LOGGER.debug("Energy reset command")
         data = await self._sid_request("/api/utils/enrgrst")
         status = data.get("STATUS")
         if status != "OK":
             raise EMApiStatusError(status or "NO_RESPONSE")
 
     async def set_clock(self, timestamp: int) -> None:
+        _LOGGER.debug("Clock set to %s", timestamp)
         data = await self._sid_request(f"/api/clock/set?sec={int(timestamp)}")
         status = data.get("STATUS")
         if status != "OK":
             raise EMApiStatusError(status or "NO_RESPONSE")
 
     async def sync_clock(self) -> None:
+        _LOGGER.debug("Clock NTP sync command")
         data = await self._sid_request("/api/clock/sync")
         status = data.get("STATUS")
         if status != "OK":

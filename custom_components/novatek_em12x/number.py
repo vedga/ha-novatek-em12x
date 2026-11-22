@@ -105,6 +105,7 @@ class NovatekEMNumberEntity(NovatekEMEntity, NumberEntity):
     async def async_set_native_value(self, value: float) -> None:
         client = self.coordinator.entry.runtime_data.client
         device_value = round(value * self._spec.to_device)
+        _LOGGER.debug("Number %s -> %s (%s)", self._param, value, device_value)
         try:
             await client.set_setting(self._param, device_value)
         except EMError as err:

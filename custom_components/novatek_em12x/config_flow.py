@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
@@ -19,12 +20,9 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
-    TextSelector,
-    TextSelectorConfig,
-    TextSelectorType,
 )
 
-from .api import EMApiClient, EMAuthError, EMError, decode_setting_str
+from .api import EMApiClient, EMError, decode_setting_str
 from .const import (
     CONF_SYNC_TIME,
     DEFAULT_SCAN_INTERVAL,
@@ -39,12 +37,47 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_HOST): str,
-        vol.Optional(CONF_PASSWORD, default=""): str,
-    }
-)
+
+@dataclass
+class EMProbe:
+    """Result of probing a device."""
+
+    mac: str
+    device_id: Any
+    name: str
+    model: str | None
+    sw_version: str | None
+
+    @property
+    def title(self) -> str:
+        return self.name or self.model or "Novatek EM"
+
+
+async def async_probe_device(hass, host: str, password: str) -> EMProbe:
+    """Connect to the device and read its identity."""
+    client = EMApiClient(host, password, async_get_clientsession(hass))
+    try:
+        info = await client.device_info()
+        name = decode_setting_str(str(info.get("user_info", "")))
+        model = MODEL_NAMES.get(info.get("device_id"))
+        if not model:
+            _LOGGER.warning("Unknown device_id %s at %s", info.get("device_id"), host)
+        mac = str(await client.get("device_mac"))
+        sw_version: str | None = None
+        try:
+            fw = await client.fwinfo()
+            sw_version = str(fw.get("CUR_VERSION")) or None
+        except EMError:
+            _LOGGER.debug("fwinfo not supported")
+    finally:
+        await client.close()
+    return EMProbe(
+        mac=mac,
+        device_id=info.get("device_id"),
+        name=name,
+        model=model,
+        sw_version=sw_version,
+    )
 
 
 class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -57,51 +90,85 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         if user_input is not None:
-            session = async_get_clientsession(self.hass)
-            client = EMApiClient(
-                user_input[CONF_HOST], user_input.get(CONF_PASSWORD, ""), session
-            )
-            try:
-                info = await client.device_info()
-                device_name = decode_setting_str(str(info.get("user_info", "")))
-                model = MODEL_NAMES.get(info.get("device_id"))
-                if not model:
-                    _LOGGER.warning(
-                        "Unknown device_id %s at %s",
-                        info.get("device_id"),
-                        user_input[CONF_HOST],
-                    )
-                mac = str(await client.get("device_mac"))
-                sw_version: str | None = None
-                try:
-                    fw = await client.fwinfo()
-                    sw_version = str(fw.get("CUR_VERSION")) or None
-                except EMError:
-                    _LOGGER.debug("fwinfo not supported")
-            except EMAuthError:
-                errors["base"] = "invalid_auth"
-            except EMError as err:
-                errors["base"] = "cannot_connect"
-                _LOGGER.warning("Connection failed: %s", err)
-            else:
-                await client.close()
-                await self.async_set_unique_id(mac)
+            probe, errors = await self._async_try_probe(user_input)
+            if probe is not None:
+                await self.async_set_unique_id(probe.mac)
                 self._abort_if_unique_id_configured()
-                title = device_name or model or "Novatek EM"
                 return self.async_create_entry(
-                    title=title,
+                    title=probe.title,
                     data={
-                        **user_input,
-                        "mac": mac,
-                        "device_id": info.get("device_id"),
-                        "name": title,
-                        "sw_version": sw_version,
+                        CONF_HOST: user_input[CONF_HOST],
+                        CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),
+                        "mac": probe.mac,
+                        "device_id": probe.device_id,
+                        "name": probe.title,
+                        "sw_version": probe.sw_version,
                     },
                 )
 
         return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_SCHEMA, errors=errors
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_HOST): str,
+                    vol.Optional(CONF_PASSWORD, default=""): str,
+                }
+            ),
+            errors=errors,
         )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
+        entry = self._get_reconfigure_entry()
+        if user_input is not None:
+            probe, errors = await self._async_try_probe(user_input)
+            if probe is not None:
+                await self.async_set_unique_id(probe.mac)
+                self._abort_if_unique_id_mismatch(reason="wrong_device")
+                return self.async_update_reload_and_abort(
+                    entry,
+                    title=probe.title,
+                    data_updates={
+                        CONF_HOST: user_input[CONF_HOST],
+                        CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),
+                        "device_id": probe.device_id,
+                        "name": probe.title,
+                        "sw_version": probe.sw_version,
+                    },
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_HOST, default=entry.data.get(CONF_HOST)
+                    ): str,
+                    vol.Optional(
+                        CONF_PASSWORD,
+                        default=entry.data.get(CONF_PASSWORD, ""),
+                    ): str,
+                }
+            ),
+            errors=errors,
+            description_placeholders={"name": entry.title},
+        )
+
+    async def _async_try_probe(
+        self, user_input: dict[str, Any]
+    ) -> tuple[EMProbe | None, dict[str, str]]:
+        try:
+            probe = await async_probe_device(
+                self.hass,
+                user_input[CONF_HOST],
+                user_input.get(CONF_PASSWORD, ""),
+            )
+        except EMError as err:
+            _LOGGER.warning("Connection failed: %s", err)
+            return None, {"base": "cannot_connect"}
+        return probe, {}
 
     @staticmethod
     @callback
@@ -122,15 +189,6 @@ class NovatekEMOptionsFlow(OptionsFlow):
             if not MIN_SCAN_INTERVAL <= user_input["scan_interval"] <= MAX_SCAN_INTERVAL:
                 errors["scan_interval"] = "invalid_interval"
             else:
-                new_password = user_input.pop(CONF_PASSWORD, None)
-                if new_password:
-                    self.hass.config_entries.async_update_entry(
-                        self.config_entry,
-                        data={
-                            **self.config_entry.data,
-                            CONF_PASSWORD: new_password,
-                        },
-                    )
                 return self.async_create_entry(title="", data=user_input)
 
         current_interval = self.config_entry.options.get(
@@ -155,9 +213,6 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(CONF_SYNC_TIME, default=current_sync): BooleanSelector(),
-                vol.Optional(CONF_PASSWORD): TextSelector(
-                    TextSelectorConfig(type=TextSelectorType.PASSWORD)
-                ),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

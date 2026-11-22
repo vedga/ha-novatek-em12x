@@ -52,6 +52,7 @@ class NovatekEMDateTimeEntity(NovatekEMEntity, DateTimeEntity):
     async def async_set_value(self, value: datetime) -> None:
         client = self.coordinator.entry.runtime_data.client
         timestamp = int(value.timestamp())
+        _LOGGER.debug("Datetime %s -> %s", self._param, timestamp)
         try:
             await client.set_setting(self._param, timestamp)
         except EMError as err:

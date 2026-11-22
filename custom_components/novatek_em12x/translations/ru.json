@@ -7,15 +7,23 @@
           "host": "Адрес устройства",
           "password": "Пароль устройства"
         }
+      },
+      "reconfigure": {
+        "description": "Изменить параметры подключения устройства {name}.",
+        "data": {
+          "host": "Адрес устройства",
+          "password": "Пароль устройства"
+        }
       }
     },
     "error": {
       "cannot_connect": "Не удалось подключиться",
       "invalid_interval": "Недопустимый интервал опроса",
-      "invalid_auth": "Authentication failed"
+      "invalid_auth": "Ошибка аутентификации"
     },
     "abort": {
-      "already_configured": "Устройство уже настроено"
+      "already_configured": "Устройство уже настроено",
+      "wrong_device": "Подключённое устройство не совпадает с этой записью"
     }
   },
   "options": {
@@ -23,8 +31,7 @@
       "init": {
         "data": {
           "scan_interval": "Интервал опроса (секунды)",
-          "sync_time": "Синхронизировать часы устройства с Home Assistant",
-          "password": "Пароль устройства (оставьте пустым, чтобы не менять)"
+          "sync_time": "Синхронизировать часы устройства с Home Assistant"
         }
       }
     },

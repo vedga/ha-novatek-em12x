@@ -65,6 +65,7 @@ class NovatekEMButtonEntity(NovatekEMEntity, ButtonEntity):
     async def async_press(self) -> None:
         client = self.coordinator.entry.runtime_data.client
         key = self.entity_description.key
+        _LOGGER.debug("Button pressed: %s", key)
         try:
             if key == "energy_reset":
                 await client.energy_reset()

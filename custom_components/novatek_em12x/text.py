@@ -44,6 +44,7 @@ class NovatekEMTextEntity(NovatekEMEntity, TextEntity):
 
     async def async_set_value(self, value: str) -> None:
         client = self.coordinator.entry.runtime_data.client
+        _LOGGER.debug("Text %s -> %s", self._param, value)
         try:
             await client.set_setting(self._param, encode_setting_str(value))
         except EMError as err:

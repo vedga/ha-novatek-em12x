@@ -7,6 +7,13 @@
           "host": "Host",
           "password": "Device password"
         }
+      },
+      "reconfigure": {
+        "description": "Update the connection settings of {name}.",
+        "data": {
+          "host": "Host",
+          "password": "Device password"
+        }
       }
     },
     "error": {
@@ -15,7 +22,8 @@
       "invalid_auth": "Authentication failed"
     },
     "abort": {
-      "already_configured": "Device is already configured"
+      "already_configured": "Device is already configured",
+      "wrong_device": "Connected device does not match this entry"
     }
   },
   "options": {
@@ -23,8 +31,7 @@
       "init": {
         "data": {
           "scan_interval": "Poll interval (seconds)",
-          "sync_time": "Synchronize device clock with Home Assistant",
-          "password": "Device password (leave empty to keep)"
+          "sync_time": "Synchronize device clock with Home Assistant"
         }
       }
     },
