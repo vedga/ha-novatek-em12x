@@ -9,9 +9,10 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import EMError
+from .api import EMAuthError, EMError
 from .const import (
     CONF_SYNC_TIME,
     DEFAULT_SCAN_INTERVAL,
@@ -97,6 +98,8 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
     async def _async_update_data(self) -> EMData:
         try:
             measurements = await self.client.get_many(MEASUREMENT_PARAMS)
+        except EMAuthError as err:
+            raise ConfigEntryAuthFailed(f"Authentication with device failed: {err}") from err
         except EMError as err:
             raise UpdateFailed(f"Error communicating with device: {err}") from err
 

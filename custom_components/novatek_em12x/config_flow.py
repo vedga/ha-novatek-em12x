@@ -156,6 +156,46 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
             description_placeholders={"name": entry.title},
         )
 
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> ConfigFlowResult:
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
+        entry = self._get_reauth_entry()
+        if user_input is not None:
+            probe, errors = await self._async_try_probe(
+                {
+                    CONF_HOST: entry.data.get(CONF_HOST),
+                    CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),
+                }
+            )
+            if probe is not None:
+                await self.async_set_unique_id(probe.mac)
+                self._abort_if_unique_id_mismatch(reason="wrong_device")
+                return self.async_update_reload_and_abort(
+                    entry,
+                    title=probe.title,
+                    data_updates={
+                        CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),
+                        "device_id": probe.device_id,
+                        "name": probe.title,
+                        "sw_version": probe.sw_version,
+                    },
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {vol.Optional(CONF_PASSWORD, default=""): str}
+            ),
+            errors=errors,
+            description_placeholders={"name": entry.title},
+        )
+
     async def _async_try_probe(
         self, user_input: dict[str, Any]
     ) -> tuple[EMProbe | None, dict[str, str]]:
