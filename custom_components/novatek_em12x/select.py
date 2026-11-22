@@ -32,7 +32,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     async_add_entities(entities)
 
 
-class NovatekEMCountAppSelectBase(NovatekEMEntity, SelectEntity):
+class NovatekEMCountApvSelectBase(NovatekEMEntity, SelectEntity):
     """Base for select entities."""
 
     _attr_entity_category = EntityCategory.CONFIG
@@ -43,7 +43,7 @@ class NovatekEMCountAppSelectBase(NovatekEMEntity, SelectEntity):
         self._attr_translation_key = key
 
 
-class NovatekEMCountApvSelect(NovatekEMCountAppSelectBase):
+class NovatekEMCountApvSelect(NovatekEMCountApvSelectBase):
     """Reclose count setting: forbidden / N attempts / always."""
 
     _attr_options: ClassVar[list[str]] = [str(option) for option in COUNT_APV_OPTIONS]
@@ -82,7 +82,7 @@ class NovatekEMCountApvSelect(NovatekEMCountAppSelectBase):
             self.coordinator.async_update_listeners()
 
 
-class NovatekEMCurrencySelect(NovatekEMCountAppSelectBase):
+class NovatekEMCurrencySelect(NovatekEMCountApvSelectBase):
     """Energy tariff currency."""
 
     _attr_options: ClassVar[list[str]] = list(COST_UNITS)

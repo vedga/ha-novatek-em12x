@@ -27,14 +27,14 @@ from .const import (
 if TYPE_CHECKING:
     from . import NovatekEMConfigEntry
 
+_LOGGER = logging.getLogger(__name__)
+
 
 def get_scan_interval(entry: NovatekEMConfigEntry) -> int:
     value = entry.options.get(
         "scan_interval", entry.data.get("scan_interval", DEFAULT_SCAN_INTERVAL)
     )
     return max(MIN_SCAN_INTERVAL, int(value))
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass

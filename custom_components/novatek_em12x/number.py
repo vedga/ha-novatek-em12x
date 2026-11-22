@@ -62,9 +62,6 @@ NUMBER_SPECS: dict[str, NumberSpec] = {
     "cloud_port": NumberSpec("cloud_port", 1, 65535, 1, None, 1, 1, "cloud_enable"),
 }
 
-MIN_BY_PASS = {"on_time_limit": 0.0, "lock_panel_time": 0.0}
-
-
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     coordinator = entry.runtime_data.coordinator
     async_add_entities(
@@ -89,7 +86,7 @@ class NovatekEMNumberEntity(NovatekEMEntity, NumberEntity):
         self._param = param
         self._spec = spec
         self._attr_translation_key = param
-        self._attr_native_min_value = MIN_BY_PASS.get(param, spec.min_value)
+        self._attr_native_min_value = spec.min_value
         self._attr_native_max_value = spec.max_value
         self._attr_native_step = spec.step
         self._attr_native_unit_of_measurement = spec.unit
