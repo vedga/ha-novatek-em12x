@@ -436,7 +436,29 @@ utility_meter:
 | Сменился IP-адрес прибора | Настройки → интеграция → ⋮ → «Изменить параметры подключения» (reconfigure), без удаления записи |
 | В логе `Session expired … re-logging in` при открытой веб-панели | нормально: у прибора одна сессия, HA перелогинивается и «забирает» её (см. раздел «Одна сессия») |
 
-Логи: `custom_components.novatek_em12x: debug` в настройках `logger`.
+### Отладочные логи
+
+**Быстро, без перезапуска:** Developer Tools → Actions → `logger.set_level`:
+
+```yaml
+custom_components.novatek_em12x: debug
+```
+
+Сбросить — тем же действием со значением `warning`.
+
+**Постоянно:** в `configuration.yaml`:
+
+```yaml
+logger:
+  default: warning
+  logs:
+    custom_components.novatek_em12x: debug
+```
+
+и перезапуск HA. Логи содержат каждое действие (`Button pressed…`,
+`Switch … -> …`, `Set param=value`, `Relay command…`) и служебные события
+клиента (`Session expired … re-logging in`). Смотреть: Настройки → Система →
+Журналы или `grep novatek_em12x /config/home-assistant.log`.
 
 ## Безопасность
 
