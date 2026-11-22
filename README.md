@@ -544,3 +544,9 @@ python scripts/live_device_check.py read|write_same|write_change|actions|events|
 
 Если ваш прибор ведёт себя иначе (другая прошивка/модель) — заведите issue с логом
 `custom_components.novatek_em12x: debug`.
+
+## Лицензия
+
+Код интеграции распространяется по лицензии **MIT** (см. [`LICENSE`](LICENSE)).
+Документация производителя (Web API Novatek Electro) не входит в репозиторий
+и остаётся собственностью правообладателя — см. ссылку в разделе «Источники».
