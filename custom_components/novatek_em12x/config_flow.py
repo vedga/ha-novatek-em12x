@@ -22,7 +22,7 @@ from homeassistant.helpers.selector import (
     NumberSelectorMode,
 )
 
-from .api import EMApiClient, EMError, decode_setting_str
+from .api import EMApiClient, EMAuthError, EMError, decode_setting_str
 from .const import (
     CONF_SYNC_TIME,
     DEFAULT_SCAN_INTERVAL,
@@ -165,6 +165,9 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
                 user_input[CONF_HOST],
                 user_input.get(CONF_PASSWORD, ""),
             )
+        except EMAuthError as err:
+            _LOGGER.warning("Authentication failed: %s", err)
+            return None, {"base": "invalid_auth"}
         except EMError as err:
             _LOGGER.warning("Connection failed: %s", err)
             return None, {"base": "cannot_connect"}
