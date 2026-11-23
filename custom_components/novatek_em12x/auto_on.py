@@ -60,6 +60,8 @@ class AutoOnManager:
         self._data: dict[str, Any] = {}
         self._unsub: CALLBACK_TYPE | None = None
         self._last_command = 0.0
+        self._expected_state: bool | None = None
+        self._expected_ts = 0.0
         self.deadline: int | None = None
         self.end: int | None = None
         self.reason: str | None = None
@@ -94,12 +96,25 @@ class AutoOnManager:
     def horizon_seconds(self) -> int:
         return int(self._option(CONF_AUTO_ON_HORIZON, DEFAULT_AUTO_ON_HORIZON)) * 3600
 
-    def note_command(self) -> None:
+    def note_command(self, state: bool | None = None) -> None:
         """Remember that the integration is controlling the relay itself."""
         self._last_command = time.monotonic()
+        if state is not None:
+            self._expected_state = state
+            self._expected_ts = self._last_command
 
     def command_recent(self, window: float = 20.0) -> bool:
         return time.monotonic() - self._last_command < window
+
+    def consume_expected(self, state: bool, ttl: float = 120.0) -> bool:
+        """Return True once if the observed state matches our own command."""
+        if (
+            self._expected_state is state
+            and time.monotonic() - self._expected_ts <= ttl
+        ):
+            self._expected_state = None
+            return True
+        return False
 
     @property
     def paused(self) -> bool:
@@ -167,9 +182,21 @@ class AutoOnManager:
                     )
                 return
             first = device_local_epoch(int(time.time()), gmt) + first_delay
-            for when in reserve_event_times(first, days):
-                await self.client.schedule_add(when, 0, DEVICE_DAY_SECONDS)
-            await self.client.schedule_run()
+            added = False
+            try:
+                for when in reserve_event_times(first, days):
+                    await self.client.schedule_add(when, 0, DEVICE_DAY_SECONDS)
+                    added = True
+                await self.client.schedule_run()
+            except EMError:
+                if added:
+                    try:
+                        await self.client.schedule_clear()
+                    except EMError as clear_err:
+                        _LOGGER.warning(
+                            "Could not clear partial reserve events: %s", clear_err
+                        )
+                raise
             self._data["device_schedule"] = True
             _LOGGER.debug(
                 "On-device reserve armed: %s day(s) from local epoch %s", days, first
@@ -243,14 +270,24 @@ class AutoOnManager:
         """Try to switch the relay on now."""
         if self.deadline is None:
             return
-        self.note_command()
+        self.note_command(True)
+        ok = True
         try:
             await self.client.ctrl(True)
         except EMError as err:
+            ok = False
             _LOGGER.warning("Auto-on attempt failed, will retry: %s", err)
         if self.reason == REASON_MANUAL:
-            await self._finish("auto-on")
-            await self.coordinator.async_request_refresh()
+            if ok:
+                await self._finish("auto-on")
+                await self.coordinator.async_request_refresh()
+                return
+            now = int(time.time())
+            self.deadline = now + max(60, self.retry_seconds)
+            self.end = max(self.end or 0, self.deadline)
+            await self._save()
+            self._schedule_next()
+            self.coordinator.async_update_listeners()
             return
         now = int(time.time())
         if self.end is not None and now + self.retry_seconds > self.end:
@@ -272,9 +309,13 @@ class AutoOnManager:
         if self._data.get("device_schedule"):
             empty = await self._device_schedule_empty()
             if empty is True:
+                days = self.reserve_days
+                if self.reason == REASON_EXTERNAL and self.end is not None:
+                    remaining = max(0, self.end - int(time.time()))
+                    days = max(1, min(days, remaining // DEVICE_DAY_SECONDS + 1))
                 await self._arm_device_chain(
                     max(1, self.deadline - int(time.time())),
-                    self.reserve_days,
+                    days,
                 )
         if int(time.time()) >= self.deadline:
             await self.async_attempt()

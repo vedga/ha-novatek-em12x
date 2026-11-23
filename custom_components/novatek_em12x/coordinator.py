@@ -143,7 +143,7 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
                 self._last_relay_on is True
                 and not relay_on
                 and not protection
-                and not self.auto_on.command_recent()
+                and not self.auto_on.consume_expected(False)
             ):
                 await self.auto_on.async_arm("external")
             await self.auto_on.async_poll_check(relay_on)

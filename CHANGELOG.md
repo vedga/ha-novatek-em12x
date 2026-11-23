@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.6
+
+- fix(auto-on): keep the safeguard armed when the relay-on command fails
+  (previously the manual safeguard was dropped on a transient error)
+- fix(auto-on): recognise our own relay commands and never treat an
+  HA-initiated switch-off as an external one (the old 20 s heuristic was
+  shorter than the polling interval)
+- fix(auto-on): clear partially created on-device reserve events on error and
+  cap the restored reserve by the remaining retry window
+- tests: HA-stub smoke tests for AutoOnManager (arming, retries, expected
+  commands, pause, multi-day chain)
+
 ## 1.8.5
 
 - fix: rewritten options flow (a bulk edit had corrupted several calls); the

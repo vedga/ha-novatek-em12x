@@ -108,7 +108,7 @@ class NovatekEMRelaySwitch(NovatekEMEntity, SwitchEntity):
     async def _toggle(self, on: bool) -> None:
         client = self.coordinator.entry.runtime_data.client
         _LOGGER.debug("Relay switch turned %s", "on" if on else "off")
-        self.coordinator.auto_on.note_command()
+        self.coordinator.auto_on.note_command(on)
         try:
             await client.ctrl(on)
         except EMError as err:

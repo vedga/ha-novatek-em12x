@@ -11,12 +11,11 @@ import voluptuous as vol
 
 
 def _install_ha_stubs() -> None:
-    if "homeassistant" in sys.modules:
-        return
-
     def module(name: str) -> types.ModuleType:
-        mod = types.ModuleType(name)
-        sys.modules[name] = mod
+        mod = sys.modules.get(name)
+        if mod is None:
+            mod = types.ModuleType(name)
+            sys.modules[name] = mod
         return mod
 
     ha = module("homeassistant")
