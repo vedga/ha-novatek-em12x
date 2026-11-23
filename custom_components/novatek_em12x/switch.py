@@ -68,7 +68,10 @@ SETTING_SWITCHES: dict[str, SwitchEntityDescription] = {
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     coordinator = entry.runtime_data.coordinator
-    entities = [NovatekEMRelaySwitch(coordinator, RELAY_DESCRIPTION)]
+    entities: list[SwitchEntity] = [
+        NovatekEMRelaySwitch(coordinator, RELAY_DESCRIPTION),
+        NovatekEMAutoOnPauseSwitch(coordinator),
+    ]
     entities.extend(
         NovatekEMSettingSwitch(coordinator, description, param)
         for param, description in SETTING_SWITCHES.items()
@@ -160,3 +163,24 @@ class NovatekEMSettingSwitch(NovatekEMEntity, SwitchEntity):
         if self.coordinator.data:
             self.coordinator.data.settings[self._param] = int(on)
             self.coordinator.async_update_listeners()
+
+
+class NovatekEMAutoOnPauseSwitch(NovatekEMEntity, SwitchEntity):
+    """Suppress auto-on while working on the power network."""
+
+    _attr_translation_key = "auto_on_pause"
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_icon = "mdi:shield-lock-outline"
+
+    def __init__(self, coordinator: NovatekEMCoordinator) -> None:
+        super().__init__(coordinator, "switch_auto_on_pause")
+
+    @property
+    def is_on(self) -> bool:
+        return self.coordinator.auto_on.paused
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.auto_on.async_set_paused(True)
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.auto_on.async_set_paused(False)

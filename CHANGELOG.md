@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0
+
+- auto-on retry interval defaults to 10 minutes (HA itself needs ~5 min to boot
+  after a power loss)
+- new "Pause auto-on" switch: suppresses both safeguards, immediately cancels
+  timers and removes the on-device backup event; persisted across restarts —
+  use it before any work on the power network
+
 ## 1.5.0
 
 - auto-on for switch-offs made outside Home Assistant (front-panel 3 s hold):

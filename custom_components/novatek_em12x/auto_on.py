@@ -61,6 +61,7 @@ class AutoOnManager:
         self.deadline: int | None = None
         self.end: int | None = None
         self.reason: str | None = None
+        self._paused = False
 
     def _option(self, key: str, default: Any) -> Any:
         return self.entry.options.get(key, self.entry.data.get(key, default))
@@ -98,12 +99,27 @@ class AutoOnManager:
     def command_recent(self, window: float = 20.0) -> bool:
         return time.monotonic() - self._last_command < window
 
+    @property
+    def paused(self) -> bool:
+        """True when auto-on is suppressed (e.g. maintenance work)."""
+        return self._paused
+
+    async def async_set_paused(self, paused: bool) -> None:
+        """Suppress or re-enable auto-on; cancels any armed safeguard."""
+        if paused:
+            await self._finish(None)
+        self._paused = paused
+        await self._save()
+        self.coordinator.async_update_listeners()
+        _LOGGER.info("Auto-on %s", "paused" if paused else "resumed")
+
     async def async_load(self) -> None:
         stored = await self._store.async_load()
         self._data = dict(stored or {})
         self.deadline = self._data.get("deadline")
         self.end = self._data.get("end")
         self.reason = self._data.get("reason")
+        self._paused = bool(self._data.get("paused", False))
 
     async def _save(self) -> None:
         self._data.update(
@@ -111,6 +127,7 @@ class AutoOnManager:
                 "deadline": self.deadline,
                 "end": self.end,
                 "reason": self.reason,
+                "paused": self._paused,
             }
         )
         await self._store.async_save(self._data)
@@ -161,6 +178,9 @@ class AutoOnManager:
             return
         if reason == REASON_EXTERNAL and not self.enabled_external:
             return
+        if self._paused:
+            _LOGGER.info("Auto-on paused, not arming (%s)", reason)
+            return
         if self.deadline is not None:
             return
         if self._unsub is not None:
@@ -197,7 +217,7 @@ class AutoOnManager:
             except EMError as err:
                 _LOGGER.warning("Could not clear the on-device auto-on events: %s", err)
         deadline = self.deadline
-        self._data = {}
+        self._data = {"paused": self._paused}
         self.deadline = None
         self.end = None
         self.reason = None
@@ -239,6 +259,9 @@ class AutoOnManager:
     async def async_restore(self) -> None:
         """Restore a pending auto-on after a Home Assistant restart."""
         await self.async_load()
+        if self._paused and self.deadline is not None:
+            await self.async_cancel()
+            return
         if self.deadline is None:
             return
         if self._data.get("device_schedule"):

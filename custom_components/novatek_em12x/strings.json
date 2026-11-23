@@ -232,6 +232,9 @@
       },
       "cloud_enable": {
         "name": "Remote access via cloud"
+      },
+      "auto_on_pause": {
+        "name": "Pause auto-on"
       }
     },
     "number": {
