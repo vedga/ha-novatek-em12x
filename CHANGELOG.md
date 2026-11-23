@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.1
+
+- fix: journal catch-up ran on almost every poll because the throttle matched
+  the polling interval; now it runs only on startup and after a failed poll
+  (reconnect), restoring the ~0.1-0.5 s cycle time
+- silence the normal end-of-journal statuses (EOSL/EOL/EOE) in debug logs
+
 ## 1.8.0
 
 - external (billing) meter reading: map the device energy counter to the

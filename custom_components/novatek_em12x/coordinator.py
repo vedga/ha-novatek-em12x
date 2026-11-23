@@ -124,11 +124,11 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         if not settings or self._poll_count % DEFAULT_SETTINGS_EVERY == 0:
             settings, cloud = await self.refresh_settings()
 
-        force = not self._journals_started or not self.last_update_success
-        try:
-            await self.catchup.async_catch_up(self.client, force=force)
-        except Exception:
-            _LOGGER.exception("Journal catch-up failed")
+        if not self._journals_started or not self.last_update_success:
+            try:
+                await self.catchup.async_catch_up(self.client, force=True)
+            except Exception:
+                _LOGGER.exception("Journal catch-up failed")
         self._journals_started = True
 
         relay_on = bool(int(measurements.get("sys_flag", 0)) >> 4 & 1)

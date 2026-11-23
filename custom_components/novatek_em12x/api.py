@@ -17,6 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=10)
 AUTH_STATUSES = {"ERROR_LOGIN", "ERROR_SESSION", "ERROR_SID"}
+QUIET_STATUSES = {"EOSL", "EOL", "EOE"}
 
 
 class EMError(Exception):
@@ -131,7 +132,7 @@ class EMApiClient:
         except ValueError as err:
             raise EMSessionExpired(f"{self._host}: non-JSON response") from err
         status = data.get("STATUS")
-        if status not in (None, "OK"):
+        if status not in (None, "OK", *QUIET_STATUSES):
             _LOGGER.debug("Device %s status %s for %s", self._host, status, path)
         return data
 
