@@ -236,7 +236,7 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(
         config_entry: NovatekEMConfigEntry,
     ) -> NovatekEMOptionsFlow:
-        return NovatekEMOptionsFlow(config_entry)
+        return NovatekEMOptionsFlow()
 
 
 class NovatekEMOptionsFlow(OptionsFlow):

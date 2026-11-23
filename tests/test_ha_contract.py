@@ -60,3 +60,11 @@ def test_unit_property_has_no_value_branches():
     block = src.split("def native_unit_of_measurement")[1].split("def device_class")[0]
     for forbidden in ("billing.reading", "last_syslog", "auto_on.deadline", "journal_missed"):
         assert forbidden not in block, forbidden
+
+
+def test_options_flow_constructed_without_arguments():
+    from pathlib import Path
+
+    src = Path("custom_components/novatek_em12x/config_flow.py").read_text()
+    assert "NovatekEMOptionsFlow(config_entry)" not in src
+    assert "return NovatekEMOptionsFlow()" in src

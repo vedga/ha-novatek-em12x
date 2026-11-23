@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.3
+
+- fix: opening the options flow returned HTTP 500 because the factory still
+  passed the config entry to an OptionsFlow whose constructor was removed
+  (HA injects config_entry automatically); added a regression test
+
 ## 1.8.2
 
 - fix: the external billing meter sensor reported its value as the unit of
