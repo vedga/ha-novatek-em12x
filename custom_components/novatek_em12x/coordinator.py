@@ -13,6 +13,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import EMAuthError, EMError
+from .catchup import JournalCatchup
 from .const import (
     CONF_SYNC_TIME,
     DEFAULT_SCAN_INTERVAL,
@@ -44,6 +45,8 @@ class EMData:
     measurements: dict[str, Any] = field(default_factory=dict)
     settings: dict[str, Any] = field(default_factory=dict)
     cloud: dict[str, Any] = field(default_factory=dict)
+    last_syslog: dict[str, Any] | None = None
+    journal_missed: int = 0
 
 
 class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
@@ -63,6 +66,8 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         self.client = client
         self._poll_count = 0
         self._last_time_sync = 0.0
+        self.catchup = JournalCatchup(hass, entry)
+        self._journals_started = False
 
     @property
     def sync_time_enabled(self) -> bool:
@@ -109,5 +114,18 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         if not settings or self._poll_count % DEFAULT_SETTINGS_EVERY == 0:
             settings, cloud = await self.refresh_settings()
 
+        force = not self._journals_started or not self.last_update_success
+        try:
+            await self.catchup.async_catch_up(self.client, force=force)
+        except Exception:
+            _LOGGER.exception("Journal catch-up failed")
+        self._journals_started = True
+
         await self._maybe_sync_time()
-        return EMData(measurements=measurements, settings=settings, cloud=cloud)
+        return EMData(
+            measurements=measurements,
+            settings=settings,
+            cloud=cloud,
+            last_syslog=self.catchup.last_event,
+            journal_missed=self.catchup.missed_syslog,
+        )

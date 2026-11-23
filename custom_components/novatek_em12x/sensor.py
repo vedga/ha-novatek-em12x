@@ -190,6 +190,19 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         icon="mdi:server",
     ),
     SensorEntityDescription(
+        key="last_event",
+        translation_key="last_event",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:history",
+    ),
+    SensorEntityDescription(
+        key="journal_missed",
+        translation_key="journal_missed",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:database-arrow-down",
+    ),
+    SensorEntityDescription(
         key="tariff",
         translation_key="tariff",
         icon="mdi:cash",
@@ -275,6 +288,13 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
     @property
     def native_unit_of_measurement(self) -> str | None:
         key = self.entity_description.key
+        if key == "last_event":
+            record = self.coordinator.data.last_syslog
+            if not record:
+                return None
+            return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "journal_missed":
+            return self.coordinator.data.journal_missed
         if key == "tariff":
             code = self._currency
             return f"{code}/kWh" if code else None
@@ -300,6 +320,14 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
                 else None
             )
         return self.entity_description.state_class
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        if self.entity_description.key == "last_event":
+            record = self.coordinator.data.last_syslog
+            if record:
+                return {"message": record["message"]}
+        return None
 
     @property
     def native_value(self) -> str | float | datetime | None:
@@ -333,6 +361,13 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if value is None:
                 return None
             return str(value)
+        if key == "last_event":
+            record = self.coordinator.data.last_syslog
+            if not record:
+                return None
+            return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "journal_missed":
+            return self.coordinator.data.journal_missed
         if key == "tariff":
             return tariff_value(self.coordinator.data.settings.get("cost_energy"))
         if key in COST_COUNTERS:

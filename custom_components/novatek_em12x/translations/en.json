@@ -126,6 +126,12 @@
       },
       "cost_monthly": {
         "name": "Cost this month"
+      },
+      "last_event": {
+        "name": "Last device event"
+      },
+      "journal_missed": {
+        "name": "Journal records on reconnect"
       }
     },
     "binary_sensor": {
