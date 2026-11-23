@@ -9,6 +9,7 @@ from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import (
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
+    UnitOfEnergy,
     UnitOfFrequency,
     UnitOfPower,
     UnitOfTime,
@@ -64,10 +65,12 @@ NUMBER_SPECS: dict[str, NumberSpec] = {
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     coordinator = entry.runtime_data.coordinator
-    async_add_entities(
+    entities: list[NumberEntity] = [
         NovatekEMNumberEntity(coordinator, param, spec)
         for param, spec in NUMBER_SPECS.items()
-    )
+    ]
+    entities.append(NovatekEMBillingNumber(coordinator))
+    async_add_entities(entities)
 
 
 class NovatekEMNumberEntity(NovatekEMEntity, NumberEntity):
@@ -124,3 +127,32 @@ class NovatekEMNumberEntity(NovatekEMEntity, NumberEntity):
         if self.coordinator.data:
             self.coordinator.data.settings[self._param] = device_value
             self.coordinator.async_update_listeners()
+
+
+class NovatekEMBillingNumber(NovatekEMEntity, NumberEntity):
+    """External (billing) meter reading setter / correction."""
+
+    _attr_mode = NumberMode.BOX
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_native_min_value = 0
+    _attr_native_max_value = 9_999_999.999
+    _attr_native_step = 0.001
+    _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
+    _attr_translation_key = "external_meter_set"
+    _attr_icon = "mdi:counter"
+
+    def __init__(self, coordinator: NovatekEMCoordinator) -> None:
+        super().__init__(coordinator, "number_external_meter_set")
+
+    @property
+    def native_value(self) -> float | None:
+        return self.coordinator.billing.reading
+
+    async def async_set_native_value(self, value: float) -> None:
+        measurements = self.coordinator.data.measurements if self.coordinator.data else {}
+        device_wh = int(
+            measurements.get("enrga_msr")
+            or self.coordinator.billing.last_device_wh
+            or 0
+        )
+        await self.coordinator.billing.async_set_reading(value, device_wh)

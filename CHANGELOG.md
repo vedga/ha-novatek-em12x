@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0
+
+- external (billing) meter reading: map the device energy counter to the
+  certified meter value with one rebase field (initial setup and periodic
+  correction are the same operation); automatic rebase on device counter
+  reset, persisted across restarts, novatek_em12x_billing bus event
+
 ## 1.7.0
 
 - on-device reserve is now configurable in days (1–7): a chain of daily

@@ -210,6 +210,15 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         icon="mdi:timer-lock-open-outline",
     ),
     SensorEntityDescription(
+        key="external_meter",
+        translation_key="external_meter",
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL,
+        suggested_display_precision=3,
+        icon="mdi:counter",
+    ),
+    SensorEntityDescription(
         key="tariff",
         translation_key="tariff",
         icon="mdi:cash",
@@ -300,6 +309,8 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if not record:
                 return None
             return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "external_meter":
+            return self.coordinator.billing.reading
         if key == "auto_on_at":
             deadline = self.coordinator.auto_on.deadline
             if deadline is None:
@@ -335,6 +346,13 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
+        if self.entity_description.key == "external_meter":
+            billing = self.coordinator.billing
+            return {
+                "base_kwh": billing.base_kwh,
+                "device_wh_at_base": billing.device_wh_at_base,
+                "updated_at": billing.updated_at,
+            }
         if self.entity_description.key == "last_event":
             record = self.coordinator.data.last_syslog
             if record:
@@ -378,6 +396,8 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if not record:
                 return None
             return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "external_meter":
+            return self.coordinator.billing.reading
         if key == "auto_on_at":
             deadline = self.coordinator.auto_on.deadline
             if deadline is None:

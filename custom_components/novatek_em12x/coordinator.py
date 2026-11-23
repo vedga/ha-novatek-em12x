@@ -14,6 +14,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import EMAuthError, EMError
 from .auto_on import AutoOnManager
+from .billing_manager import BillingManager
 from .catchup import JournalCatchup
 from .const import (
     CONF_SYNC_TIME,
@@ -70,6 +71,7 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         self.catchup = JournalCatchup(hass, entry)
         self._last_relay_on: bool | None = None
         self.auto_on = AutoOnManager(hass, entry, client, self)
+        self.billing = BillingManager(hass, entry, self)
         self._journals_started = False
 
     @property
@@ -110,6 +112,11 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
             raise ConfigEntryAuthFailed(f"Authentication with device failed: {err}") from err
         except EMError as err:
             raise UpdateFailed(f"Error communicating with device: {err}") from err
+
+        try:
+            await self.billing.async_update(int(measurements.get("enrga_msr", 0)))
+        except Exception:
+            _LOGGER.exception("External meter update failed")
 
         self._poll_count += 1
         settings: dict[str, Any] = self.data.settings if self.data else {}

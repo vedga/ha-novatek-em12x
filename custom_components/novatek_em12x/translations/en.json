@@ -141,6 +141,9 @@
       },
       "auto_on_at": {
         "name": "Auto-on at"
+      },
+      "external_meter": {
+        "name": "External meter reading"
       }
     },
     "binary_sensor": {
@@ -312,6 +315,9 @@
       },
       "cloud_port": {
         "name": "Cloud server port"
+      },
+      "external_meter_set": {
+        "name": "Set external meter reading"
       }
     },
     "select": {
