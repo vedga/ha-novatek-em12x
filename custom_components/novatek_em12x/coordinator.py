@@ -68,6 +68,7 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         self._poll_count = 0
         self._last_time_sync = 0.0
         self.catchup = JournalCatchup(hass, entry)
+        self._last_relay_on: bool | None = None
         self.auto_on = AutoOnManager(hass, entry, client, self)
         self._journals_started = False
 
@@ -124,10 +125,24 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         self._journals_started = True
 
         relay_on = bool(int(measurements.get("sys_flag", 0)) >> 4 & 1)
+        protection = bool(int(measurements.get("faul_flag", 0))) or bool(
+            int(measurements.get("ar_time", 0))
+        )
         try:
+            await self.auto_on.async_check_journal(
+                self.catchup.relay_transitions, relay_on, protection
+            )
+            if (
+                self._last_relay_on is True
+                and not relay_on
+                and not protection
+                and not self.auto_on.command_recent()
+            ):
+                await self.auto_on.async_arm("external")
             await self.auto_on.async_poll_check(relay_on)
         except Exception:
             _LOGGER.exception("Auto-on check failed")
+        self._last_relay_on = relay_on
 
         await self._maybe_sync_time()
         return EMData(

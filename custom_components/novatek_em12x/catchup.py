@@ -17,6 +17,7 @@ from .journals import (
     newer_than,
     parse_journal,
     parse_syslog,
+    relay_transitions,
 )
 
 if TYPE_CHECKING:
@@ -49,6 +50,7 @@ class JournalCatchup:
         self.last_event: dict[str, Any] | None = None
         self.missed_syslog = 0
         self.missed_journal = 0
+        self.relay_transitions: list[dict[str, Any]] = []
 
     async def async_load(self) -> None:
         stored = await self._store.async_load()
@@ -121,6 +123,12 @@ class JournalCatchup:
                 since_j = newest_j
                 baseline = True
             new_j = [] if baseline else newer_than(journal, since_j)
+            stored_relay = self._data.get("relay_on")
+            previous_relay = None if stored_relay is None else bool(stored_relay)
+            self.relay_transitions = relay_transitions(
+                new_j, None if baseline else previous_relay
+            )
+            self._data["relay_on"] = int(bool(journal[-1]["sys_flags"] >> 4 & 1))
             if baseline:
                 self._data["faul_mask"] = journal[-1]["faul_flags"]
             else:

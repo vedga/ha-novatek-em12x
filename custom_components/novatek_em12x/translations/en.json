@@ -40,7 +40,10 @@
           "sync_time": "Synchronize device clock with Home Assistant",
           "auto_on_enabled": "Safety auto-on after manual switch-off",
           "auto_on_delay": "Auto-on delay (minutes)",
-          "auto_on_duration": "On-device backup duration (hours)"
+          "auto_on_duration": "On-device backup duration (hours)",
+          "auto_on_external": "Auto-on when switched off outside Home Assistant",
+          "auto_on_retry": "Retry interval for external switch-off (minutes)",
+          "auto_on_horizon": "Retry window for external switch-off (hours)"
         }
       }
     },

@@ -27,16 +27,25 @@ from .const import (
     CONF_AUTO_ON_DELAY,
     CONF_AUTO_ON_DURATION,
     CONF_AUTO_ON_ENABLED,
+    CONF_AUTO_ON_EXTERNAL,
+    CONF_AUTO_ON_HORIZON,
+    CONF_AUTO_ON_RETRY,
     CONF_SYNC_TIME,
     DEFAULT_AUTO_ON_DELAY,
     DEFAULT_AUTO_ON_DURATION,
+    DEFAULT_AUTO_ON_HORIZON,
+    DEFAULT_AUTO_ON_RETRY,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MAX_AUTO_ON_DELAY,
     MAX_AUTO_ON_DURATION,
+    MAX_AUTO_ON_HORIZON,
+    MAX_AUTO_ON_RETRY,
     MAX_SCAN_INTERVAL,
     MIN_AUTO_ON_DELAY,
     MIN_AUTO_ON_DURATION,
+    MIN_AUTO_ON_HORIZON,
+    MIN_AUTO_ON_RETRY,
     MIN_SCAN_INTERVAL,
     MODEL_NAMES,
 )
@@ -253,6 +262,9 @@ class NovatekEMOptionsFlow(OptionsFlow):
         )
         current_auto_on = self.config_entry.options.get(
             CONF_AUTO_ON_ENABLED,
+    CONF_AUTO_ON_EXTERNAL,
+    CONF_AUTO_ON_HORIZON,
+    CONF_AUTO_ON_RETRY,
             self.config_entry.data.get(CONF_AUTO_ON_ENABLED, False),
         )
         current_delay = self.config_entry.options.get(
@@ -263,6 +275,20 @@ class NovatekEMOptionsFlow(OptionsFlow):
             CONF_AUTO_ON_DURATION,
             self.config_entry.data.get(
                 CONF_AUTO_ON_DURATION, DEFAULT_AUTO_ON_DURATION
+            ),
+        )
+        current_external = self.config_entry.options.get(
+            CONF_AUTO_ON_EXTERNAL,
+            self.config_entry.data.get(CONF_AUTO_ON_EXTERNAL, False),
+        )
+        current_retry = self.config_entry.options.get(
+            CONF_AUTO_ON_RETRY,
+            self.config_entry.data.get(CONF_AUTO_ON_RETRY, DEFAULT_AUTO_ON_RETRY),
+        )
+        current_horizon = self.config_entry.options.get(
+            CONF_AUTO_ON_HORIZON,
+            self.config_entry.data.get(
+                CONF_AUTO_ON_HORIZON, DEFAULT_AUTO_ON_HORIZON
             ),
         )
         schema = vol.Schema(
@@ -280,7 +306,10 @@ class NovatekEMOptionsFlow(OptionsFlow):
                 ),
                 vol.Required(CONF_SYNC_TIME, default=current_sync): BooleanSelector(),
                 vol.Required(
-                    CONF_AUTO_ON_ENABLED, default=current_auto_on
+                    CONF_AUTO_ON_ENABLED,
+    CONF_AUTO_ON_EXTERNAL,
+    CONF_AUTO_ON_HORIZON,
+    CONF_AUTO_ON_RETRY, default=current_auto_on
                 ): BooleanSelector(),
                 vol.Required(
                     CONF_AUTO_ON_DELAY, default=int(current_delay)
@@ -299,6 +328,31 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     NumberSelectorConfig(
                         min=MIN_AUTO_ON_DURATION,
                         max=MAX_AUTO_ON_DURATION,
+                        step=1,
+                        unit_of_measurement="h",
+                        mode=NumberSelectorMode.BOX,
+                    )
+                ),
+                vol.Required(
+                    CONF_AUTO_ON_EXTERNAL, default=current_external
+                ): BooleanSelector(),
+                vol.Required(
+                    CONF_AUTO_ON_RETRY, default=int(current_retry)
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=MIN_AUTO_ON_RETRY,
+                        max=MAX_AUTO_ON_RETRY,
+                        step=1,
+                        unit_of_measurement="min",
+                        mode=NumberSelectorMode.BOX,
+                    )
+                ),
+                vol.Required(
+                    CONF_AUTO_ON_HORIZON, default=int(current_horizon)
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=MIN_AUTO_ON_HORIZON,
+                        max=MAX_AUTO_ON_HORIZON,
                         step=1,
                         unit_of_measurement="h",
                         mode=NumberSelectorMode.BOX,
