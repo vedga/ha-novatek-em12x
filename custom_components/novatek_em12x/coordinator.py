@@ -83,14 +83,16 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
     async def _maybe_sync_time(self) -> None:
         if not self.sync_time_enabled:
             return
-        if time.monotonic() - self._last_time_sync < TIME_SYNC_INTERVAL:
+        now = time.monotonic()
+        if now - self._last_time_sync < TIME_SYNC_INTERVAL:
             return
-        self._last_time_sync = time.monotonic()
         try:
             await self.client.set_clock(int(time.time()))
+            self._last_time_sync = now
             _LOGGER.debug("Device clock synchronized")
         except EMError as err:
-            _LOGGER.warning("Clock sync failed: %s", err)
+            self._last_time_sync = now - TIME_SYNC_INTERVAL + 300
+            _LOGGER.warning("Clock sync failed (retry in 5 min): %s", err)
 
     async def refresh_settings(self) -> tuple[dict[str, Any], dict[str, Any]]:
         settings: dict[str, Any] = self.data.settings if self.data else {}
@@ -113,10 +115,11 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         except EMError as err:
             raise UpdateFailed(f"Error communicating with device: {err}") from err
 
-        try:
-            await self.billing.async_update(int(measurements.get("enrga_msr", 0)))
-        except Exception:
-            _LOGGER.exception("External meter update failed")
+        if "enrga_msr" in measurements:
+            try:
+                await self.billing.async_update(int(measurements["enrga_msr"]))
+            except Exception:
+                _LOGGER.exception("External meter update failed")
 
         self._poll_count += 1
         settings: dict[str, Any] = self.data.settings if self.data else {}

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.8.7
+
+- fix: skip the external-meter update when the energy counter measurement is
+  missing (previously a missing value was treated as 0 and triggered a rebase)
+- fix: the billing number rebase no longer falls back through a zero counter
+- fix: clear the remembered relay state when a relay command fails, so a later
+  genuine external switch-off is still detected
+- fix: retry a failed device clock sync after 5 minutes instead of an hour
+- fix: limit the cloud server address field to 30 characters (device maximum)
+- ci: run the unit test suite (pytest) on every push and pull request
+- tests: BillingManager smoke tests (baseline, increments, counter reset,
+  manual rebase) — 47 tests total
+
 ## 1.8.6
 
 - fix(auto-on): keep the safeguard armed when the relay-on command fails

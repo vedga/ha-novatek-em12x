@@ -150,9 +150,7 @@ class NovatekEMBillingNumber(NovatekEMEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         measurements = self.coordinator.data.measurements if self.coordinator.data else {}
-        device_wh = int(
-            measurements.get("enrga_msr")
-            or self.coordinator.billing.last_device_wh
-            or 0
-        )
-        await self.coordinator.billing.async_set_reading(value, device_wh)
+        device_wh = measurements.get("enrga_msr")
+        if device_wh is None:
+            device_wh = self.coordinator.billing.last_device_wh or 0
+        await self.coordinator.billing.async_set_reading(value, int(device_wh))

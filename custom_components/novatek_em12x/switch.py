@@ -113,6 +113,7 @@ class NovatekEMRelaySwitch(NovatekEMEntity, SwitchEntity):
             await client.ctrl(on)
         except EMError as err:
             _LOGGER.error("Relay control failed: %s", err)
+            self.coordinator.auto_on.note_command()
             await self.coordinator.async_request_refresh()
             return
         auto_on = self.coordinator.auto_on

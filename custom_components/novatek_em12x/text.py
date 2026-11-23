@@ -30,6 +30,10 @@ class NovatekEMTextEntity(NovatekEMEntity, TextEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_native_min = 0
     _attr_native_max = 32
+
+    @property
+    def native_max(self) -> int:
+        return 30 if self._param == "cloud_address" else 32
     _attr_pattern = None
     _attr_mode = TextMode.TEXT
 

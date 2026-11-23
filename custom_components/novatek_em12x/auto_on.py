@@ -102,6 +102,8 @@ class AutoOnManager:
         if state is not None:
             self._expected_state = state
             self._expected_ts = self._last_command
+        else:
+            self._expected_state = None
 
     def command_recent(self, window: float = 20.0) -> bool:
         return time.monotonic() - self._last_command < window
