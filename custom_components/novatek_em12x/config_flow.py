@@ -147,6 +147,7 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_mismatch(reason="wrong_device")
                 return self.async_update_reload_and_abort(
                     entry,
+                    unique_id=probe.mac,
                     title=probe.title,
                     data_updates={
                         CONF_HOST: user_input[CONF_HOST],
@@ -196,6 +197,7 @@ class NovatekEMConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_mismatch(reason="wrong_device")
                 return self.async_update_reload_and_abort(
                     entry,
+                    unique_id=probe.mac,
                     title=probe.title,
                     data_updates={
                         CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),

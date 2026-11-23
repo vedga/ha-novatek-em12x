@@ -58,6 +58,7 @@ def _install_ha_stubs() -> None:
             return SimpleNamespace(title="EM-129", data={})
 
         def async_update_reload_and_abort(self, *args, **kwargs):
+            self.update_kwargs = kwargs
             return {"type": "abort"}
 
     class OptionsFlow:
@@ -150,3 +151,30 @@ def test_user_step_shows_form():
     result = asyncio.run(flow.async_step_user(None))
     assert result["type"] == "form"
     assert _keys(result["data_schema"]) == {"host", "password"}
+
+
+def _probe_stub():
+    return SimpleNamespace(
+        mac="AA:BB:CC:DD:EE:FF",
+        device_id=1,
+        title="EM-129",
+        sw_version="1.271.3.34",
+    )
+
+
+async def _fake_probe(self, user_input):
+    return _probe_stub(), {}
+
+
+def test_reconfigure_persists_unique_id(monkeypatch):
+    monkeypatch.setattr(config_flow.NovatekEMConfigFlow, "_async_try_probe", _fake_probe)
+    flow = config_flow.NovatekEMConfigFlow()
+    asyncio.run(flow.async_step_reconfigure({"host": "1.2.3.4", "password": ""}))
+    assert flow.update_kwargs["unique_id"] == "AA:BB:CC:DD:EE:FF"
+
+
+def test_reauth_persists_unique_id(monkeypatch):
+    monkeypatch.setattr(config_flow.NovatekEMConfigFlow, "_async_try_probe", _fake_probe)
+    flow = config_flow.NovatekEMConfigFlow()
+    asyncio.run(flow.async_step_reauth_confirm({"password": ""}))
+    assert flow.update_kwargs["unique_id"] == "AA:BB:CC:DD:EE:FF"
