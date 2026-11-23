@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+- journal catch-up after network loss or HA restart: syslog/data-log are read
+  and published as bus events (novatek_em12x_syslog / _reboot / _fault),
+  last seen timestamps persisted in a Store; new diagnostic sensors
+- safety auto-on after a manual switch-off: HA timer plus on-device schedule
+  backup, persisted across restarts, with cancel button and options
+  (enable, delay in minutes, backup duration in hours)
+
 ## 1.3.1
 
 - add a local brand icon (`brand/icon.png`) and make the HACS validation run
