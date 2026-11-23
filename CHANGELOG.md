@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.5
+
+- fix: rewritten options flow (a bulk edit had corrupted several calls); the
+  horizon selector now shows hours
+- tests: offline smoke tests for the config and options flows using minimal
+  Home Assistant stubs (they build the real voluptuous schema), plus AST
+  guards for `vol.Required/Optional` positional arguments
+
 ## 1.8.4
 
 - fix: options flow crashed with "get expected at most 2 arguments" because a

@@ -116,3 +116,25 @@ def test_options_schema_matches_translations():
     translated = set(strings["options"]["step"]["init"]["data"])
     missing = keys - translated
     assert not missing, f"options schema keys without translations: {missing}"
+
+
+def test_voluptuous_keyword_args_are_single():
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse(
+        Path("custom_components/novatek_em12x/config_flow.py").read_text()
+    )
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr in ("Required", "Optional")
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "vol"
+            and len(node.args) > 1
+        ):
+            raise AssertionError(
+                f"vol.{node.func.attr} with {len(node.args)} positional args "
+                f"at line {node.lineno}"
+            )

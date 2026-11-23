@@ -247,51 +247,23 @@ class NovatekEMOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         if user_input is not None:
-            if not MIN_SCAN_INTERVAL <= user_input["scan_interval"] <= MAX_SCAN_INTERVAL:
+            interval = user_input["scan_interval"]
+            if not MIN_SCAN_INTERVAL <= interval <= MAX_SCAN_INTERVAL:
                 errors["scan_interval"] = "invalid_interval"
             else:
                 return self.async_create_entry(title="", data=user_input)
 
-        current_interval = self.config_entry.options.get(
-            "scan_interval",
-            self.config_entry.data.get("scan_interval", DEFAULT_SCAN_INTERVAL),
-        )
-        current_sync = self.config_entry.options.get(
-            CONF_SYNC_TIME,
-            self.config_entry.data.get(CONF_SYNC_TIME, True),
-        )
-        current_auto_on = self.config_entry.options.get(
-            CONF_AUTO_ON_ENABLED,
-            self.config_entry.data.get(CONF_AUTO_ON_ENABLED, False),
-        )
-        current_delay = self.config_entry.options.get(
-            CONF_AUTO_ON_DELAY,
-            self.config_entry.data.get(CONF_AUTO_ON_DELAY, DEFAULT_AUTO_ON_DELAY),
-        )
-        current_duration = self.config_entry.options.get(
-            CONF_AUTO_ON_DAYS,
-            self.config_entry.data.get(
-                CONF_AUTO_ON_DAYS, DEFAULT_AUTO_ON_DAYS
-            ),
-        )
-        current_external = self.config_entry.options.get(
-            CONF_AUTO_ON_EXTERNAL,
-            self.config_entry.data.get(CONF_AUTO_ON_EXTERNAL, False),
-        )
-        current_retry = self.config_entry.options.get(
-            CONF_AUTO_ON_RETRY,
-            self.config_entry.data.get(CONF_AUTO_ON_RETRY, DEFAULT_AUTO_ON_RETRY),
-        )
-        current_horizon = self.config_entry.options.get(
-            CONF_AUTO_ON_HORIZON,
-            self.config_entry.data.get(
-                CONF_AUTO_ON_HORIZON, DEFAULT_AUTO_ON_HORIZON
-            ),
-        )
+        options = self.config_entry.options
+        data = self.config_entry.data
+
+        def current(key: str, default: Any) -> Any:
+            return options.get(key, data.get(key, default))
+
         schema = vol.Schema(
             {
                 vol.Required(
-                    "scan_interval", default=int(current_interval)
+                    "scan_interval",
+                    default=int(current("scan_interval", DEFAULT_SCAN_INTERVAL)),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_SCAN_INTERVAL,
@@ -301,15 +273,16 @@ class NovatekEMOptionsFlow(OptionsFlow):
                         mode=NumberSelectorMode.BOX,
                     )
                 ),
-                vol.Required(CONF_SYNC_TIME, default=current_sync): BooleanSelector(),
                 vol.Required(
-                    CONF_AUTO_ON_ENABLED,
-    CONF_AUTO_ON_EXTERNAL,
-    CONF_AUTO_ON_HORIZON,
-    CONF_AUTO_ON_RETRY, default=current_auto_on
+                    CONF_SYNC_TIME, default=bool(current(CONF_SYNC_TIME, True))
                 ): BooleanSelector(),
                 vol.Required(
-                    CONF_AUTO_ON_DELAY, default=int(current_delay)
+                    CONF_AUTO_ON_ENABLED,
+                    default=bool(current(CONF_AUTO_ON_ENABLED, False)),
+                ): BooleanSelector(),
+                vol.Required(
+                    CONF_AUTO_ON_DELAY,
+                    default=int(current(CONF_AUTO_ON_DELAY, DEFAULT_AUTO_ON_DELAY)),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_AUTO_ON_DELAY,
@@ -320,7 +293,8 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(
-                    CONF_AUTO_ON_DAYS, default=int(current_duration)
+                    CONF_AUTO_ON_DAYS,
+                    default=int(current(CONF_AUTO_ON_DAYS, DEFAULT_AUTO_ON_DAYS)),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_AUTO_ON_DAYS,
@@ -331,10 +305,12 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(
-                    CONF_AUTO_ON_EXTERNAL, default=current_external
+                    CONF_AUTO_ON_EXTERNAL,
+                    default=bool(current(CONF_AUTO_ON_EXTERNAL, False)),
                 ): BooleanSelector(),
                 vol.Required(
-                    CONF_AUTO_ON_RETRY, default=int(current_retry)
+                    CONF_AUTO_ON_RETRY,
+                    default=int(current(CONF_AUTO_ON_RETRY, DEFAULT_AUTO_ON_RETRY)),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_AUTO_ON_RETRY,
@@ -345,13 +321,16 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(
-                    CONF_AUTO_ON_HORIZON, default=int(current_horizon)
+                    CONF_AUTO_ON_HORIZON,
+                    default=int(
+                        current(CONF_AUTO_ON_HORIZON, DEFAULT_AUTO_ON_HORIZON)
+                    ),
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=MIN_AUTO_ON_HORIZON,
                         max=MAX_AUTO_ON_HORIZON,
                         step=1,
-                        unit_of_measurement="d",
+                        unit_of_measurement="h",
                         mode=NumberSelectorMode.BOX,
                     )
                 ),
