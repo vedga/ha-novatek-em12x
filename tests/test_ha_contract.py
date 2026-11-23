@@ -68,3 +68,51 @@ def test_options_flow_constructed_without_arguments():
     src = Path("custom_components/novatek_em12x/config_flow.py").read_text()
     assert "NovatekEMOptionsFlow(config_entry)" not in src
     assert "return NovatekEMOptionsFlow()" in src
+
+
+def test_no_overlong_mapping_get_calls():
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse(
+        Path("custom_components/novatek_em12x/config_flow.py").read_text()
+    )
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and len(node.args) > 2
+        ):
+            raise AssertionError(
+                f"Mapping.get with {len(node.args)} arguments at line {node.lineno}"
+            )
+
+
+def test_options_schema_matches_translations():
+    import ast
+    import json
+    from pathlib import Path
+
+    src = Path("custom_components/novatek_em12x/config_flow.py").read_text()
+    tree = ast.parse(src)
+    keys = set()
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "Required"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "vol"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
+            keys.add(node.args[0].value)
+
+    strings = json.loads(
+        Path("custom_components/novatek_em12x/strings.json").read_text()
+    )
+    translated = set(strings["options"]["step"]["init"]["data"])
+    missing = keys - translated
+    assert not missing, f"options schema keys without translations: {missing}"

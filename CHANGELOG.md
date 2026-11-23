@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.4
+
+- fix: options flow crashed with "get expected at most 2 arguments" because a
+  bulk edit injected extra import lines into a `.get()` call; added AST guards
+  for overlong mapping calls and for schema/translation key parity
+
 ## 1.8.3
 
 - fix: opening the options flow returned HTTP 500 because the factory still

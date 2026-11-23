@@ -262,9 +262,6 @@ class NovatekEMOptionsFlow(OptionsFlow):
         )
         current_auto_on = self.config_entry.options.get(
             CONF_AUTO_ON_ENABLED,
-    CONF_AUTO_ON_EXTERNAL,
-    CONF_AUTO_ON_HORIZON,
-    CONF_AUTO_ON_RETRY,
             self.config_entry.data.get(CONF_AUTO_ON_ENABLED, False),
         )
         current_delay = self.config_entry.options.get(
