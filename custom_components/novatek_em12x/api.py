@@ -218,6 +218,51 @@ class EMApiClient:
             raise EMApiStatusError(status or "NO_RESPONSE")
         return data
 
+    async def _paginate(self, path: str, key: str) -> list[Any]:
+        rows: list[Any] = []
+        offset = 0
+        for _ in range(50):
+            data = await self._sid_request(f"{path}?offset={offset}")
+            page = data.get(key, [])
+            rows.extend(page)
+            if data.get("STATUS") != "OK" or not page:
+                break
+            next_offset = data.get("OFFSET", offset)
+            if next_offset == offset:
+                break
+            offset = next_offset
+        return rows
+
+    async def syslog(self) -> list[list[Any]]:
+        return await self._paginate("/api/syslog/get", "SYSLOGS")
+
+    async def journal(self) -> list[list[Any]]:
+        return await self._paginate("/api/loger/get", "LOGS")
+
+    async def schedule(self) -> list[list[Any]]:
+        return await self._paginate("/api/event/get", "EVENTS")
+
+    async def schedule_clear(self) -> None:
+        data = await self._sid_request("/api/event/delall")
+        status = data.get("STATUS")
+        if status != "OK":
+            raise EMApiStatusError(status or "NO_RESPONSE")
+
+    async def schedule_add(self, when: int, repeat: int, live: int) -> None:
+        data = await self._sid_request(
+            f"/api/event/set?time={int(when)}&repeat={int(repeat)}"
+            f"&live={int(live)}&flags=0&value=1"
+        )
+        status = data.get("STATUS")
+        if status != "OK":
+            raise EMApiStatusError(status or "NO_RESPONSE")
+
+    async def schedule_run(self) -> None:
+        data = await self._sid_request("/api/event/run")
+        status = data.get("STATUS")
+        if status != "OK":
+            raise EMApiStatusError(status or "NO_RESPONSE")
+
     async def cloud_info(self) -> dict[str, Any]:
         data = await self._sid_request("/api/utils/cloud_info")
         status = data.get("STATUS")

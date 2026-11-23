@@ -15,3 +15,4 @@ sys.modules.setdefault("novatek_em12x", pkg)
 
 importlib.import_module("novatek_em12x.const")
 importlib.import_module("novatek_em12x.api")
+importlib.import_module("novatek_em12x.journals")
