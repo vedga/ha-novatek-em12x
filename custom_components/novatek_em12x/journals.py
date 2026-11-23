@@ -91,6 +91,8 @@ def relay_transitions(
     records: list[dict[str, Any]], previous_state: bool | None
 ) -> list[dict[str, Any]]:
     """Return records where the load relay state changed."""
+    if previous_state is None:
+        return []
     out = []
     last = previous_state
     for record in records:
