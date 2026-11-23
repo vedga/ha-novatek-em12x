@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.0
+
+- on-device reserve is now configurable in days (1–7): a chain of daily
+  schedule events with a 60 s overlap keeps the relay continuously on;
+  events survive device reboots
+- verified on hardware: the RTC keeps time for at least 15 minutes without
+  power and without NTP, and the relay state is restored after power-on
+  (ON stays ON, OFF stays OFF); documented with the remaining RTC-duration
+  uncertainty
+
 ## 1.6.0
 
 - auto-on retry interval defaults to 10 minutes (HA itself needs ~5 min to boot

@@ -11,18 +11,20 @@ from homeassistant.helpers.storage import Store
 
 from .api import EMError
 from .const import (
+    CONF_AUTO_ON_DAYS,
     CONF_AUTO_ON_DELAY,
-    CONF_AUTO_ON_DURATION,
     CONF_AUTO_ON_ENABLED,
     CONF_AUTO_ON_EXTERNAL,
     CONF_AUTO_ON_HORIZON,
     CONF_AUTO_ON_RETRY,
+    DEFAULT_AUTO_ON_DAYS,
     DEFAULT_AUTO_ON_DELAY,
-    DEFAULT_AUTO_ON_DURATION,
     DEFAULT_AUTO_ON_HORIZON,
     DEFAULT_AUTO_ON_RETRY,
+    DEVICE_DAY_SECONDS,
     DOMAIN,
     device_local_epoch,
+    reserve_event_times,
 )
 
 if TYPE_CHECKING:
@@ -81,8 +83,8 @@ class AutoOnManager:
         return int(self._option(CONF_AUTO_ON_DELAY, DEFAULT_AUTO_ON_DELAY)) * 60
 
     @property
-    def duration_seconds(self) -> int:
-        return int(self._option(CONF_AUTO_ON_DURATION, DEFAULT_AUTO_ON_DURATION)) * 3600
+    def reserve_days(self) -> int:
+        return int(self._option(CONF_AUTO_ON_DAYS, DEFAULT_AUTO_ON_DAYS))
 
     @property
     def retry_seconds(self) -> int:
@@ -154,7 +156,7 @@ class AutoOnManager:
             _LOGGER.warning("Could not read the device schedule: %s", err)
             return None
 
-    async def _arm_device_single(self, delay: int, live: int) -> None:
+    async def _arm_device_chain(self, first_delay: int, days: int) -> None:
         try:
             gmt = int(await self.client.get("time_gmt"))
             empty = await self._device_schedule_empty()
@@ -164,13 +166,16 @@ class AutoOnManager:
                         "Device schedule is not empty, skipping the on-device backup"
                     )
                 return
-            when = device_local_epoch(int(time.time()), gmt) + delay
-            await self.client.schedule_add(when, 0, live)
+            first = device_local_epoch(int(time.time()), gmt) + first_delay
+            for when in reserve_event_times(first, days):
+                await self.client.schedule_add(when, 0, DEVICE_DAY_SECONDS)
             await self.client.schedule_run()
             self._data["device_schedule"] = True
-            _LOGGER.debug("On-device auto-on event set at local epoch %s", when)
+            _LOGGER.debug(
+                "On-device reserve armed: %s day(s) from local epoch %s", days, first
+            )
         except EMError as err:
-            _LOGGER.warning("Could not set the on-device auto-on backup: %s", err)
+            _LOGGER.warning("Could not set the on-device reserve: %s", err)
 
     async def async_arm(self, reason: str = REASON_MANUAL) -> None:
         """Arm the safeguard after the relay was switched off."""
@@ -191,11 +196,11 @@ class AutoOnManager:
         if reason == REASON_EXTERNAL:
             self.deadline = now + self.retry_seconds
             self.end = now + self.horizon_seconds
-            await self._arm_device_single(self.retry_seconds, self.duration_seconds)
+            await self._arm_device_chain(self.retry_seconds, self.reserve_days)
         else:
             self.deadline = now + self.delay_seconds
             self.end = self.deadline
-            await self._arm_device_single(self.delay_seconds, self.duration_seconds)
+            await self._arm_device_chain(self.delay_seconds, self.reserve_days)
         await self._save()
         self._schedule_next()
         self.coordinator.async_update_listeners()
@@ -267,9 +272,9 @@ class AutoOnManager:
         if self._data.get("device_schedule"):
             empty = await self._device_schedule_empty()
             if empty is True:
-                await self._arm_device_single(
+                await self._arm_device_chain(
                     max(1, self.deadline - int(time.time())),
-                    self.duration_seconds,
+                    self.reserve_days,
                 )
         if int(time.time()) >= self.deadline:
             await self.async_attempt()

@@ -7,7 +7,7 @@ CONF_PASSWORD = "password"
 CONF_SYNC_TIME = "sync_time"
 CONF_AUTO_ON_ENABLED = "auto_on_enabled"
 CONF_AUTO_ON_DELAY = "auto_on_delay"
-CONF_AUTO_ON_DURATION = "auto_on_duration"
+CONF_AUTO_ON_DAYS = "auto_on_days"
 CONF_AUTO_ON_EXTERNAL = "auto_on_external"
 CONF_AUTO_ON_RETRY = "auto_on_retry"
 CONF_AUTO_ON_HORIZON = "auto_on_horizon"
@@ -19,11 +19,13 @@ DEFAULT_SETTINGS_EVERY = 5
 TIME_SYNC_INTERVAL = 3600
 CATCHUP_MIN_INTERVAL = 30
 DEFAULT_AUTO_ON_DELAY = 10
-DEFAULT_AUTO_ON_DURATION = 24
+DEFAULT_AUTO_ON_DAYS = 1
 MIN_AUTO_ON_DELAY = 1
 MAX_AUTO_ON_DELAY = 1440
-MIN_AUTO_ON_DURATION = 1
-MAX_AUTO_ON_DURATION = 24
+MIN_AUTO_ON_DAYS = 1
+MAX_AUTO_ON_DAYS = 7
+DEVICE_DAY_SECONDS = 86400
+DEVICE_EVENT_OVERLAP = 60
 DEFAULT_AUTO_ON_RETRY = 10
 DEFAULT_AUTO_ON_HORIZON = 1
 MIN_AUTO_ON_RETRY = 1
@@ -212,3 +214,10 @@ def energy_cost(
 def device_local_epoch(now_utc: int, gmt_seconds: int) -> int:
     """Convert a UTC epoch to the device local epoch used by its schedule."""
     return int(now_utc) + int(gmt_seconds)
+
+
+def reserve_event_times(first_local: int, days: int) -> list[int]:
+    """Return local epochs of a daily chain that keeps the relay on."""
+    days = max(1, min(MAX_AUTO_ON_DAYS, int(days)))
+    step = DEVICE_DAY_SECONDS - DEVICE_EVENT_OVERLAP
+    return [int(first_local) + index * step for index in range(days)]

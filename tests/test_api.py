@@ -230,3 +230,22 @@ def test_device_local_epoch():
 
     assert device_local_epoch(1000, 10800) == 11800
     assert device_local_epoch(0, 0) == 0
+
+
+def test_reserve_event_times():
+    from novatek_em12x.const import (
+        DEVICE_DAY_SECONDS,
+        DEVICE_EVENT_OVERLAP,
+        reserve_event_times,
+    )
+
+    times = reserve_event_times(1000, 3)
+    assert len(times) == 3
+    assert times[0] == 1000
+    step = DEVICE_DAY_SECONDS - DEVICE_EVENT_OVERLAP
+    assert times[1] == 1000 + step
+    assert times[2] == 1000 + 2 * step
+    import itertools
+    assert all(b - a < DEVICE_DAY_SECONDS for a, b in itertools.pairwise(times))
+    assert len(reserve_event_times(0, 99)) == 7
+    assert len(reserve_event_times(0, 0)) == 1

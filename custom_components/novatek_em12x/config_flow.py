@@ -24,26 +24,26 @@ from homeassistant.helpers.selector import (
 
 from .api import EMApiClient, EMAuthError, EMError, decode_setting_str
 from .const import (
+    CONF_AUTO_ON_DAYS,
     CONF_AUTO_ON_DELAY,
-    CONF_AUTO_ON_DURATION,
     CONF_AUTO_ON_ENABLED,
     CONF_AUTO_ON_EXTERNAL,
     CONF_AUTO_ON_HORIZON,
     CONF_AUTO_ON_RETRY,
     CONF_SYNC_TIME,
+    DEFAULT_AUTO_ON_DAYS,
     DEFAULT_AUTO_ON_DELAY,
-    DEFAULT_AUTO_ON_DURATION,
     DEFAULT_AUTO_ON_HORIZON,
     DEFAULT_AUTO_ON_RETRY,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    MAX_AUTO_ON_DAYS,
     MAX_AUTO_ON_DELAY,
-    MAX_AUTO_ON_DURATION,
     MAX_AUTO_ON_HORIZON,
     MAX_AUTO_ON_RETRY,
     MAX_SCAN_INTERVAL,
+    MIN_AUTO_ON_DAYS,
     MIN_AUTO_ON_DELAY,
-    MIN_AUTO_ON_DURATION,
     MIN_AUTO_ON_HORIZON,
     MIN_AUTO_ON_RETRY,
     MIN_SCAN_INTERVAL,
@@ -272,9 +272,9 @@ class NovatekEMOptionsFlow(OptionsFlow):
             self.config_entry.data.get(CONF_AUTO_ON_DELAY, DEFAULT_AUTO_ON_DELAY),
         )
         current_duration = self.config_entry.options.get(
-            CONF_AUTO_ON_DURATION,
+            CONF_AUTO_ON_DAYS,
             self.config_entry.data.get(
-                CONF_AUTO_ON_DURATION, DEFAULT_AUTO_ON_DURATION
+                CONF_AUTO_ON_DAYS, DEFAULT_AUTO_ON_DAYS
             ),
         )
         current_external = self.config_entry.options.get(
@@ -323,13 +323,13 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(
-                    CONF_AUTO_ON_DURATION, default=int(current_duration)
+                    CONF_AUTO_ON_DAYS, default=int(current_duration)
                 ): NumberSelector(
                     NumberSelectorConfig(
-                        min=MIN_AUTO_ON_DURATION,
-                        max=MAX_AUTO_ON_DURATION,
+                        min=MIN_AUTO_ON_DAYS,
+                        max=MAX_AUTO_ON_DAYS,
                         step=1,
-                        unit_of_measurement="h",
+                        unit_of_measurement="d",
                         mode=NumberSelectorMode.BOX,
                     )
                 ),
@@ -354,7 +354,7 @@ class NovatekEMOptionsFlow(OptionsFlow):
                         min=MIN_AUTO_ON_HORIZON,
                         max=MAX_AUTO_ON_HORIZON,
                         step=1,
-                        unit_of_measurement="h",
+                        unit_of_measurement="d",
                         mode=NumberSelectorMode.BOX,
                     )
                 ),
