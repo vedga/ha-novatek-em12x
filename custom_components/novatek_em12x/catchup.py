@@ -73,6 +73,15 @@ class JournalCatchup:
             syslog = []
         if syslog:
             since = int(self._data.get("syslog_ts", 0))
+            newest = latest_timestamp(syslog)
+            if since and newest < since:
+                _LOGGER.warning(
+                    "Device syslog went backwards (%s < %s), resetting baseline",
+                    newest,
+                    since,
+                )
+                since = newest
+                baseline = True
             new = [] if baseline else newer_than(syslog, since)
             for record in new[-EVENT_NAME_MAX:]:
                 self._fire(
@@ -102,6 +111,15 @@ class JournalCatchup:
             journal = []
         if journal:
             since_j = int(self._data.get("journal_ts", 0))
+            newest_j = latest_timestamp(journal)
+            if since_j and newest_j < since_j:
+                _LOGGER.warning(
+                    "Device data log went backwards (%s < %s), resetting baseline",
+                    newest_j,
+                    since_j,
+                )
+                since_j = newest_j
+                baseline = True
             new_j = [] if baseline else newer_than(journal, since_j)
             if baseline:
                 self._data["faul_mask"] = journal[-1]["faul_flags"]
