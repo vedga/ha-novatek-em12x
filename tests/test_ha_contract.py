@@ -138,3 +138,18 @@ def test_voluptuous_keyword_args_are_single():
                 f"vol.{node.func.attr} with {len(node.args)} positional args "
                 f"at line {node.lineno}"
             )
+
+
+def test_manifest_key_order_and_categories():
+    import json
+    from pathlib import Path
+
+    manifest = json.loads(
+        Path("custom_components/novatek_em12x/manifest.json").read_text()
+    )
+    keys = list(manifest)
+    assert keys[:2] == ["domain", "name"]
+    rest = keys[2:]
+    assert rest == sorted(rest), f"manifest keys not sorted: {rest}"
+    assert isinstance(manifest.get("categories"), list)
+    assert manifest["categories"]
