@@ -21,9 +21,7 @@ from .const import (
     DEFAULT_AUTO_ON_DURATION,
     DEFAULT_AUTO_ON_HORIZON,
     DEFAULT_AUTO_ON_RETRY,
-    DEVICE_PULSE_SECONDS,
     DOMAIN,
-    MAX_DEVICE_EVENTS,
     device_local_epoch,
 )
 
@@ -157,28 +155,6 @@ class AutoOnManager:
         except EMError as err:
             _LOGGER.warning("Could not set the on-device auto-on backup: %s", err)
 
-    async def _arm_device_series(self, interval: int, horizon: int) -> None:
-        try:
-            gmt = int(await self.client.get("time_gmt"))
-            empty = await self._device_schedule_empty()
-            if empty is not True:
-                if empty is False:
-                    _LOGGER.warning(
-                        "Device schedule is not empty, skipping the on-device backup"
-                    )
-                return
-            count = max(1, min(MAX_DEVICE_EVENTS, horizon // interval))
-            base = device_local_epoch(int(time.time()), gmt)
-            for step in range(1, count + 1):
-                await self.client.schedule_add(
-                    base + step * interval, 0, DEVICE_PULSE_SECONDS
-                )
-            await self.client.schedule_run()
-            self._data["device_schedule"] = True
-            _LOGGER.debug("On-device auto-on series armed: %s attempts", count)
-        except EMError as err:
-            _LOGGER.warning("Could not set the on-device auto-on series: %s", err)
-
     async def async_arm(self, reason: str = REASON_MANUAL) -> None:
         """Arm the safeguard after the relay was switched off."""
         if reason == REASON_MANUAL and not self.enabled:
@@ -195,7 +171,7 @@ class AutoOnManager:
         if reason == REASON_EXTERNAL:
             self.deadline = now + self.retry_seconds
             self.end = now + self.horizon_seconds
-            await self._arm_device_series(self.retry_seconds, self.horizon_seconds)
+            await self._arm_device_single(self.retry_seconds, self.duration_seconds)
         else:
             self.deadline = now + self.delay_seconds
             self.end = self.deadline
@@ -268,16 +244,10 @@ class AutoOnManager:
         if self._data.get("device_schedule"):
             empty = await self._device_schedule_empty()
             if empty is True:
-                if self.reason == REASON_EXTERNAL:
-                    remaining = max(0, (self.end or self.deadline) - int(time.time()))
-                    await self._arm_device_series(
-                        self.retry_seconds, max(remaining, self.retry_seconds)
-                    )
-                else:
-                    await self._arm_device_single(
-                        max(1, self.deadline - int(time.time())),
-                        self.duration_seconds,
-                    )
+                await self._arm_device_single(
+                    max(1, self.deadline - int(time.time())),
+                    self.duration_seconds,
+                )
         if int(time.time()) >= self.deadline:
             await self.async_attempt()
         else:

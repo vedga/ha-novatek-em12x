@@ -5,7 +5,8 @@
 - auto-on for switch-offs made outside Home Assistant (front-panel 3 s hold):
   detected by relay state transitions and by extra data-log samples, then
   retried every N minutes within a configurable window, with an on-device
-  pulse schedule as a backup; toggleable, cancel button, restart-safe
+  hold event (persisted across reboots) as the real recovery path when the
+  network gear is powered through the relay; toggleable, restart-safe
 - docs: panel button behaviour, new options and limitations
 
 ## 1.4.0
