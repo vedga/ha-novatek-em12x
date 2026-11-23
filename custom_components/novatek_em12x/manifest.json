@@ -12,5 +12,8 @@
   "loggers": [
     "novatek_em12x"
   ],
-  "version": "1.8.7"
+  "categories": [
+    "energy.meters_monitoring"
+  ],
+  "version": "1.8.8"
 }

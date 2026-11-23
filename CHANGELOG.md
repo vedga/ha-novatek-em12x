@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.8
+
+- manifest: add `categories` (`energy.meters_monitoring`) so the integration
+  shows up in the right catalog category and the HACS validation warning goes
+  away
+
 ## 1.8.7
 
 - fix: skip the external-meter update when the energy counter measurement is
