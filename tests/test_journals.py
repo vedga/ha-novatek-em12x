@@ -54,3 +54,24 @@ def test_fault_mask_changes():
     changes = fault_mask_changes(records)
     assert [(c["timestamp"], c["raised"]) for c in changes] == [(20, 2), (40, 16)]
     assert [c["raised"] for c in fault_mask_changes(records, previous_mask=2)] == [2, 16]
+
+
+def test_relay_transitions():
+    from novatek_em12x.journals import relay_transitions
+
+    recs = [
+        {"timestamp": 10, "sys_flags": 0x10},
+        {"timestamp": 20, "sys_flags": 0x10},
+        {"timestamp": 30, "sys_flags": 0x00},
+        {"timestamp": 40, "sys_flags": 0x10},
+    ]
+    assert relay_transitions(recs, None) == []
+    assert relay_transitions(recs, True) == [
+        {"timestamp": 30, "relay": False},
+        {"timestamp": 40, "relay": True},
+    ]
+    assert relay_transitions(recs, False) == [
+        {"timestamp": 10, "relay": True},
+        {"timestamp": 30, "relay": False},
+        {"timestamp": 40, "relay": True},
+    ]

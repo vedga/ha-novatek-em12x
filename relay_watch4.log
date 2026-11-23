@@ -1,0 +1,7 @@
+15:14:47.840 monitor4 started
+15:14:48.081 CHANGE relay=False ev=False man=True faul=0 ar=0 flag=1544749696
+15:15:47.920 alive relay=False
+15:16:48.201 alive relay=False
+15:17:03.622 CHANGE relay=True ev=False man=True faul=0 ar=0 flag=1544749712
+15:17:24.806 CHANGE relay=False ev=False man=True faul=0 ar=0 flag=1544749696
+15:17:48.247 alive relay=False

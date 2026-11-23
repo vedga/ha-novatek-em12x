@@ -85,3 +85,17 @@ def fault_mask_changes(
 def is_reboot(record: dict[str, Any]) -> bool:
     """Return True if a syslog record reports a device start."""
     return record["message"].startswith("SYS: Started")
+
+
+def relay_transitions(
+    records: list[dict[str, Any]], previous_state: bool | None
+) -> list[dict[str, Any]]:
+    """Return records where the load relay state changed."""
+    out = []
+    last = previous_state
+    for record in records:
+        state = bool(record["sys_flags"] >> 4 & 1)
+        if last is not None and state != last:
+            out.append({"timestamp": record["timestamp"], "relay": state})
+        last = state
+    return out
