@@ -4,7 +4,8 @@
 
 - manifest: add `categories` (`energy.meters_monitoring`) so the integration
   shows up in the right catalog category and the HACS validation warning goes
-  away
+  away; keep manifest keys in the hassfest-required order (domain, name, then
+  alphabetical)
 
 ## 1.8.7
 

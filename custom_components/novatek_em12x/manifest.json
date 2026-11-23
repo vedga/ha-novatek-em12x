@@ -1,6 +1,9 @@
 {
   "domain": "novatek_em12x",
   "name": "Novatek Electro EM-12x",
+  "categories": [
+    "energy.meters_monitoring"
+  ],
   "codeowners": [
     "@vedga"
   ],
@@ -11,9 +14,6 @@
   "issue_tracker": "https://github.com/vedga/ha-novatek-em12x/issues",
   "loggers": [
     "novatek_em12x"
-  ],
-  "categories": [
-    "energy.meters_monitoring"
   ],
   "version": "1.8.8"
 }
