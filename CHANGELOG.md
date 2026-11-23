@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.2
+
+- fix: the external billing meter sensor reported its value as the unit of
+  measurement (e.g. '0.154') because value branches had been inserted into
+  `native_unit_of_measurement`; restored kWh and added a regression test
+
 ## 1.8.1
 
 - fix: journal catch-up ran on almost every poll because the throttle matched

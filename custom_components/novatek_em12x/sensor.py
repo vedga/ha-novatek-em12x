@@ -305,20 +305,6 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
     @property
     def native_unit_of_measurement(self) -> str | None:
         key = self.entity_description.key
-        if key == "last_event":
-            record = self.coordinator.data.last_syslog
-            if not record:
-                return None
-            return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
-        if key == "external_meter":
-            return self.coordinator.billing.reading
-        if key == "auto_on_at":
-            deadline = self.coordinator.auto_on.deadline
-            if deadline is None:
-                return None
-            return datetime.fromtimestamp(int(deadline), tz=dt_util.UTC)
-        if key == "journal_missed":
-            return self.coordinator.data.journal_missed
         if key == "tariff":
             code = self._currency
             return f"{code}/kWh" if code else None

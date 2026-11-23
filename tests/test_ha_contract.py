@@ -51,3 +51,12 @@ def test_ha_enum_attributes_are_known():
     used = {u for u in used if "." in u}
     unknown = used - HA_ENUM_WHITELIST
     assert not unknown, f"Unknown HA enum members: {unknown}"
+
+
+def test_unit_property_has_no_value_branches():
+    from pathlib import Path
+
+    src = Path("custom_components/novatek_em12x/sensor.py").read_text()
+    block = src.split("def native_unit_of_measurement")[1].split("def device_class")[0]
+    for forbidden in ("billing.reading", "last_syslog", "auto_on.deadline", "journal_missed"):
+        assert forbidden not in block, forbidden
