@@ -4,3 +4,4 @@ __pycache__/
 .ruff_cache/
 novatek_em12x.tar.gz
 *.tar.gz
+.ha_token
