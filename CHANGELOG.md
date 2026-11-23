@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.9
+
+- fix: the reconfigure and reauth flows now persist the device MAC as the
+  config entry `unique_id` (previously the entry could end up without a unique
+  id, leaving the duplicate-device guard ineffective)
+- tests: cover `unique_id` persistence in the reconfigure and reauth flows —
+  50 tests total
+
 ## 1.8.8
 
 - manifest: add `categories` (`energy.meters_monitoring`) so the integration
