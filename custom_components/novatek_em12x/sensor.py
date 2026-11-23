@@ -146,6 +146,7 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         translation_key="reclose_countdown",
         native_unit_of_measurement=UnitOfTime.SECONDS,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         entity_category=EntityCategory.DIAGNOSTIC,
         icon="mdi:timer-outline",
     ),
@@ -273,7 +274,7 @@ SCALES = {
     "enrga_d_msr": 0.001,
     "enrga_w_msr": 0.001,
     "enrga_m_msr": 0.001,
-    "ar_time": 1,
+    "ar_time": 0.001,
 }
 
 

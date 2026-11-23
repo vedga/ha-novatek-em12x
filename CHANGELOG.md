@@ -6,6 +6,8 @@
   certified meter value with one rebase field (initial setup and periodic
   correction are the same operation); automatic rebase on device counter
   reset, persisted across restarts, novatek_em12x_billing bus event
+- fix: reclose countdown sensor rescales ar_time from device milliseconds to
+  seconds (documentation wrongly says seconds)
 
 ## 1.7.0
 
