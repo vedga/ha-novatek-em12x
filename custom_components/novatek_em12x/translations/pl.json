@@ -1,0 +1,374 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Połączenie z licznikiem energii Novatek Electro EM-125/EM-126T/EM-129.",
+        "data": {
+          "host": "Adres urządzenia",
+          "password": "Hasło urządzenia"
+        }
+      },
+      "reconfigure": {
+        "description": "Zmień parametry połączenia urządzenia {name}.",
+        "data": {
+          "host": "Adres urządzenia",
+          "password": "Hasło urządzenia"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Ponowne uwierzytelnienie urządzenia {name}.",
+        "data": {
+          "password": "Hasło urządzenia"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie można się połączyć",
+      "invalid_interval": "Nieprawidłowy interwał odpytywania",
+      "invalid_auth": "Błąd uwierzytelnienia"
+    },
+    "abort": {
+      "already_configured": "Urządzenie jest już skonfigurowane",
+      "wrong_device": "Połączone urządzenie nie odpowiada temu wpisowi"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Interwał odpytywania (sekundy)",
+          "sync_time": "Synchronizuj zegar urządzenia z Home Assistant",
+          "auto_on_enabled": "Awaryjne auto-włączenie po ręcznym wyłączeniu",
+          "auto_on_delay": "Opóźnienie auto-włączenia (minuty)",
+          "auto_on_external": "Auto-włączenie po wyłączeniu poza Home Assistant",
+          "auto_on_retry": "Interwał ponowień przy wyłączeniu zewnętrznym (minuty)",
+          "auto_on_horizon": "Okno ponowień przy wyłączeniu zewnętrznym (godziny)",
+          "auto_on_days": "Rezerwa w urządzeniu (dni)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Interwał musi wynosić od 5 do 300 sekund"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "voltage": {
+        "name": "Napięcie"
+      },
+      "current": {
+        "name": "Prąd"
+      },
+      "active_power": {
+        "name": "Moc czynna"
+      },
+      "apparent_power": {
+        "name": "Moc pozorna"
+      },
+      "power_factor": {
+        "name": "Współczynnik mocy"
+      },
+      "frequency": {
+        "name": "Częstotliwość"
+      },
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "energy_active": {
+        "name": "Energia czynna"
+      },
+      "energy_apparent": {
+        "name": "Energia pozorna"
+      },
+      "energy_active_daily": {
+        "name": "Energia dzisiaj"
+      },
+      "energy_active_weekly": {
+        "name": "Energia w tym tygodniu"
+      },
+      "energy_active_monthly": {
+        "name": "Energia w tym miesiącu"
+      },
+      "reclose_countdown": {
+        "name": "Czas do ponownego włączenia"
+      },
+      "device_time": {
+        "name": "Czas urządzenia"
+      },
+      "ntp_synced": {
+        "name": "Synchronizacja NTP",
+        "state": {
+          "on": "Zsynchronizowano",
+          "off": "Nie zsynchronizowano"
+        }
+      },
+      "cloud_synced": {
+        "name": "Synchronizacja z chmurą",
+        "state": {
+          "on": "Zsynchronizowano",
+          "off": "Nie zsynchronizowano"
+        }
+      },
+      "cloud_status": {
+        "name": "Status chmury"
+      },
+      "cloud_last_error": {
+        "name": "Ostatni błąd chmury"
+      },
+      "cloud_server": {
+        "name": "Serwer chmury"
+      },
+      "tariff": {
+        "name": "Taryfa"
+      },
+      "cost_total": {
+        "name": "Koszt łącznie"
+      },
+      "cost_daily": {
+        "name": "Koszt dzisiaj"
+      },
+      "cost_weekly": {
+        "name": "Koszt w tym tygodniu"
+      },
+      "cost_monthly": {
+        "name": "Koszt w tym miesiącu"
+      },
+      "last_event": {
+        "name": "Ostatnie zdarzenie urządzenia"
+      },
+      "journal_missed": {
+        "name": "Wpisy dziennika przy ponownym połączeniu"
+      },
+      "auto_on_at": {
+        "name": "Auto-włączenie o"
+      },
+      "external_meter": {
+        "name": "Odczyt licznika zewnętrznego"
+      }
+    },
+    "binary_sensor": {
+      "fault_overvoltage": {
+        "name": "Przepięcie"
+      },
+      "fault_undervoltage": {
+        "name": "Podnapięcie"
+      },
+      "fault_voltage_over_290v": {
+        "name": "Napięcie powyżej 290 V"
+      },
+      "fault_voltage_apv_limit": {
+        "name": "Limit SPZ napięcia"
+      },
+      "fault_overcurrent": {
+        "name": "Przeciążenie prądowe"
+      },
+      "fault_current_over_17a": {
+        "name": "Prąd powyżej 17 A"
+      },
+      "fault_current_apv_limit": {
+        "name": "Limit SPZ prądu"
+      },
+      "fault_overpower": {
+        "name": "Przeciążenie mocą"
+      },
+      "fault_power_apv_limit": {
+        "name": "Limit SPZ mocy"
+      },
+      "fault_temperature_sensor_fault": {
+        "name": "Uszkodzenie czujnika temperatury"
+      },
+      "fault_temperature_sensor_open": {
+        "name": "Rozwarcie czujnika temperatury"
+      },
+      "fault_temperature_sensor_short": {
+        "name": "Zwarcie czujnika temperatury"
+      },
+      "fault_rtc_fault": {
+        "name": "Błąd zegara"
+      },
+      "fault_relay_fault": {
+        "name": "Uszkodzenie przekaźnika"
+      },
+      "fault_on_time_limit_blocked": {
+        "name": "Blokada limitu czasu pracy"
+      },
+      "fault_overfrequency": {
+        "name": "Częstotliwość za wysoka"
+      },
+      "fault_underfrequency": {
+        "name": "Częstotliwość za niska"
+      },
+      "fault_frequency_apv_limit": {
+        "name": "Limit SPZ częstotliwości"
+      },
+      "fault_not_calibrated": {
+        "name": "Brak kalibracji"
+      },
+      "fault_settings_damaged": {
+        "name": "Uszkodzone ustawienia"
+      },
+      "panel_locked": {
+        "name": "Panel zablokowany"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Przekaźnik obciążenia"
+      },
+      "pow_enable": {
+        "name": "Ochrona mocowa"
+      },
+      "freq_enable": {
+        "name": "Ochrona częstotliwości"
+      },
+      "dst_enable": {
+        "name": "Czas letni"
+      },
+      "hctrl_enable": {
+        "name": "Tryb urlopowy"
+      },
+      "sync_sntp_enable": {
+        "name": "Synchronizacja NTP"
+      },
+      "wifi_wdt_enable": {
+        "name": "Watchdog Wi-Fi"
+      },
+      "cloud_enable": {
+        "name": "Zdalny dostęp przez chmurę"
+      },
+      "auto_on_pause": {
+        "name": "Pauza auto-włączenia"
+      }
+    },
+    "number": {
+      "volt_leveloff_hi": {
+        "name": "Górny próg napięcia"
+      },
+      "volt_leveloff_lo": {
+        "name": "Dolny próg napięcia"
+      },
+      "volt_level_hys": {
+        "name": "Histereza napięcia"
+      },
+      "volt_timeoff_hi": {
+        "name": "Opóźnienie wyłączenia górnego progu"
+      },
+      "volt_timeoff_lo": {
+        "name": "Opóźnienie wyłączenia dolnego progu"
+      },
+      "volt_timeon_apv": {
+        "name": "Opóźnienie SPZ napięcia"
+      },
+      "cur_leveloff": {
+        "name": "Próg wyłączenia prądowego"
+      },
+      "cur_timeoff": {
+        "name": "Opóźnienie wyłączenia prądowego"
+      },
+      "cur_timeon_apv": {
+        "name": "Opóźnienie SPZ prądowego"
+      },
+      "pow_leveloff": {
+        "name": "Próg wyłączenia mocowego"
+      },
+      "pow_timeoff": {
+        "name": "Opóźnienie wyłączenia mocowego"
+      },
+      "pow_timeon_apv": {
+        "name": "Opóźnienie SPZ mocowego"
+      },
+      "freq_leveloff_hi": {
+        "name": "Górny próg częstotliwości"
+      },
+      "freq_leveloff_lo": {
+        "name": "Dolny próg częstotliwości"
+      },
+      "freq_timeoff": {
+        "name": "Opóźnienie wyłączenia częstotliwości"
+      },
+      "freq_timeon_apv": {
+        "name": "Opóźnienie SPZ częstotliwości"
+      },
+      "apv_reset_time": {
+        "name": "Czas resetu liczników SPZ"
+      },
+      "on_time_limit": {
+        "name": "Limit czasu pracy"
+      },
+      "lock_panel_time": {
+        "name": "Blokada panelu"
+      },
+      "time_corr": {
+        "name": "Korekta zegara"
+      },
+      "led_intens": {
+        "name": "Jasność wskaźników"
+      },
+      "cost_energy": {
+        "name": "Taryfa"
+      },
+      "sync_sntp_port": {
+        "name": "Port serwera NTP"
+      },
+      "sync_sntp_time": {
+        "name": "Okres synchronizacji NTP"
+      },
+      "cloud_port": {
+        "name": "Port serwera chmury"
+      },
+      "external_meter_set": {
+        "name": "Ustaw odczyt licznika zewnętrznego"
+      }
+    },
+    "select": {
+      "volt_count_apv": {
+        "name": "Liczba prób SPZ napięcia"
+      },
+      "cur_count_apv": {
+        "name": "Liczba prób SPZ prądu"
+      },
+      "pow_count_apv": {
+        "name": "Liczba prób SPZ mocy"
+      },
+      "freq_count_apv": {
+        "name": "Liczba prób SPZ częstotliwości"
+      },
+      "cost_unit": {
+        "name": "Waluta"
+      }
+    },
+    "button": {
+      "energy_reset": {
+        "name": "Wyzeruj liczniki energii"
+      },
+      "set_time": {
+        "name": "Ustaw zegar z Home Assistant"
+      },
+      "ntp_sync": {
+        "name": "Uruchom synchronizację NTP"
+      },
+      "reboot": {
+        "name": "Uruchom ponownie urządzenie"
+      },
+      "cancel_auto_on": {
+        "name": "Anuluj auto-włączenie"
+      }
+    },
+    "datetime": {
+      "hctrl_from": {
+        "name": "Początek urlopu"
+      },
+      "hctrl_to": {
+        "name": "Koniec urlopu"
+      }
+    },
+    "text": {
+      "sync_sntp_address": {
+        "name": "Adres serwera NTP"
+      },
+      "cloud_address": {
+        "name": "Adres serwera chmury"
+      }
+    }
+  }
+}

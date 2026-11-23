@@ -10,6 +10,8 @@
   seconds (documentation wrongly says seconds)
 - docs: frequency protection test results (high/low threshold bits, continuous
   out-of-range behaviour, fault clearing without reboot)
+- localization: Polish and Ukrainian translations (device-supported languages);
+  now en, ru, pl, uk with full key parity
 
 ## 1.7.0
 

@@ -1,0 +1,374 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Підключення до лічильника електроенергії Novatek Electro EM-125/EM-126T/EM-129.",
+        "data": {
+          "host": "Адреса пристрою",
+          "password": "Пароль пристрою"
+        }
+      },
+      "reconfigure": {
+        "description": "Змінити параметри підключення пристрою {name}.",
+        "data": {
+          "host": "Адреса пристрою",
+          "password": "Пароль пристрою"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Повторна автентифікація пристрою {name}.",
+        "data": {
+          "password": "Пароль пристрою"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не вдалося підключитися",
+      "invalid_interval": "Неприпустимий інтервал опитування",
+      "invalid_auth": "Помилка автентифікації"
+    },
+    "abort": {
+      "already_configured": "Пристрій уже налаштовано",
+      "wrong_device": "Підключений пристрій не відповідає цьому запису"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Інтервал опитування (секунди)",
+          "sync_time": "Синхронізувати годинник пристрою з Home Assistant",
+          "auto_on_enabled": "Аварійне автоввімкнення після ручного вимкнення",
+          "auto_on_delay": "Затримка автоввімкнення (хвилини)",
+          "auto_on_external": "Автоввімкнення після вимкнення поза Home Assistant",
+          "auto_on_retry": "Інтервал повторів при зовнішньому вимкненні (хвилини)",
+          "auto_on_horizon": "Вікно повторів при зовнішньому вимкненні (години)",
+          "auto_on_days": "Резерв на пристрої (доби)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Інтервал має бути від 5 до 300 секунд"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "voltage": {
+        "name": "Напруга"
+      },
+      "current": {
+        "name": "Струм"
+      },
+      "active_power": {
+        "name": "Активна потужність"
+      },
+      "apparent_power": {
+        "name": "Повна потужність"
+      },
+      "power_factor": {
+        "name": "Коефіцієнт потужності"
+      },
+      "frequency": {
+        "name": "Частота"
+      },
+      "temperature": {
+        "name": "Температура"
+      },
+      "energy_active": {
+        "name": "Активна енергія"
+      },
+      "energy_apparent": {
+        "name": "Повна енергія"
+      },
+      "energy_active_daily": {
+        "name": "Енергія за добу"
+      },
+      "energy_active_weekly": {
+        "name": "Енергія за тиждень"
+      },
+      "energy_active_monthly": {
+        "name": "Енергія за місяць"
+      },
+      "reclose_countdown": {
+        "name": "Час до повторного ввімкнення"
+      },
+      "device_time": {
+        "name": "Час пристрою"
+      },
+      "ntp_synced": {
+        "name": "Синхронізація NTP",
+        "state": {
+          "on": "Синхронізовано",
+          "off": "Не синхронізовано"
+        }
+      },
+      "cloud_synced": {
+        "name": "Синхронізація з хмарою",
+        "state": {
+          "on": "Синхронізовано",
+          "off": "Не синхронізовано"
+        }
+      },
+      "cloud_status": {
+        "name": "Статус хмари"
+      },
+      "cloud_last_error": {
+        "name": "Остання помилка хмари"
+      },
+      "cloud_server": {
+        "name": "Сервер хмари"
+      },
+      "tariff": {
+        "name": "Тариф"
+      },
+      "cost_total": {
+        "name": "Вартість усього"
+      },
+      "cost_daily": {
+        "name": "Вартість за добу"
+      },
+      "cost_weekly": {
+        "name": "Вартість за тиждень"
+      },
+      "cost_monthly": {
+        "name": "Вартість за місяць"
+      },
+      "last_event": {
+        "name": "Остання подія пристрою"
+      },
+      "journal_missed": {
+        "name": "Записів журналу при перепідключенні"
+      },
+      "auto_on_at": {
+        "name": "Автоввімкнення о"
+      },
+      "external_meter": {
+        "name": "Показання зовнішнього лічильника"
+      }
+    },
+    "binary_sensor": {
+      "fault_overvoltage": {
+        "name": "Перенапруга"
+      },
+      "fault_undervoltage": {
+        "name": "Знижена напруга"
+      },
+      "fault_voltage_over_290v": {
+        "name": "Напруга понад 290 В"
+      },
+      "fault_voltage_apv_limit": {
+        "name": "Ліміт АПВ за напругою"
+      },
+      "fault_overcurrent": {
+        "name": "Перевантаження за струмом"
+      },
+      "fault_current_over_17a": {
+        "name": "Струм понад 17 А"
+      },
+      "fault_current_apv_limit": {
+        "name": "Ліміт АПВ за струмом"
+      },
+      "fault_overpower": {
+        "name": "Перевантаження за потужністю"
+      },
+      "fault_power_apv_limit": {
+        "name": "Ліміт АПВ за потужністю"
+      },
+      "fault_temperature_sensor_fault": {
+        "name": "Несправність датчика температури"
+      },
+      "fault_temperature_sensor_open": {
+        "name": "Обрив датчика температури"
+      },
+      "fault_temperature_sensor_short": {
+        "name": "Замикання датчика температури"
+      },
+      "fault_rtc_fault": {
+        "name": "Збій годинника"
+      },
+      "fault_relay_fault": {
+        "name": "Несправність реле"
+      },
+      "fault_on_time_limit_blocked": {
+        "name": "Блокування за часом роботи"
+      },
+      "fault_overfrequency": {
+        "name": "Підвищена частота"
+      },
+      "fault_underfrequency": {
+        "name": "Знижена частота"
+      },
+      "fault_frequency_apv_limit": {
+        "name": "Ліміт АПВ за частотою"
+      },
+      "fault_not_calibrated": {
+        "name": "Немає калібрування"
+      },
+      "fault_settings_damaged": {
+        "name": "Пошкодження налаштувань"
+      },
+      "panel_locked": {
+        "name": "Панель заблокована"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Реле навантаження"
+      },
+      "pow_enable": {
+        "name": "Захист за потужністю"
+      },
+      "freq_enable": {
+        "name": "Захист за частотою"
+      },
+      "dst_enable": {
+        "name": "Літній час"
+      },
+      "hctrl_enable": {
+        "name": "Режим відпустки"
+      },
+      "sync_sntp_enable": {
+        "name": "Синхронізація NTP"
+      },
+      "wifi_wdt_enable": {
+        "name": "Вартовий таймер Wi-Fi"
+      },
+      "cloud_enable": {
+        "name": "Віддалений доступ через хмару"
+      },
+      "auto_on_pause": {
+        "name": "Пауза автоввімкнення"
+      }
+    },
+    "number": {
+      "volt_leveloff_hi": {
+        "name": "Верхній поріг напруги"
+      },
+      "volt_leveloff_lo": {
+        "name": "Нижній поріг напруги"
+      },
+      "volt_level_hys": {
+        "name": "Гістерезис напруги"
+      },
+      "volt_timeoff_hi": {
+        "name": "Затримка вимкнення за верхнім порогом"
+      },
+      "volt_timeoff_lo": {
+        "name": "Затримка вимкнення за нижнім порогом"
+      },
+      "volt_timeon_apv": {
+        "name": "Затримка АПВ за напругою"
+      },
+      "cur_leveloff": {
+        "name": "Поріг вимкнення за струмом"
+      },
+      "cur_timeoff": {
+        "name": "Затримка вимкнення за струмом"
+      },
+      "cur_timeon_apv": {
+        "name": "Затримка АПВ за струмом"
+      },
+      "pow_leveloff": {
+        "name": "Поріг вимкнення за потужністю"
+      },
+      "pow_timeoff": {
+        "name": "Затримка вимкнення за потужністю"
+      },
+      "pow_timeon_apv": {
+        "name": "Затримка АПВ за потужністю"
+      },
+      "freq_leveloff_hi": {
+        "name": "Верхній поріг частоти"
+      },
+      "freq_leveloff_lo": {
+        "name": "Нижній поріг частоти"
+      },
+      "freq_timeoff": {
+        "name": "Затримка вимкнення за частотою"
+      },
+      "freq_timeon_apv": {
+        "name": "Затримка АПВ за частотою"
+      },
+      "apv_reset_time": {
+        "name": "Час скидання лічильників АПВ"
+      },
+      "on_time_limit": {
+        "name": "Обмеження часу роботи"
+      },
+      "lock_panel_time": {
+        "name": "Блокування панелі"
+      },
+      "time_corr": {
+        "name": "Корекція ходу годинника"
+      },
+      "led_intens": {
+        "name": "Яскравість індикації"
+      },
+      "cost_energy": {
+        "name": "Тариф"
+      },
+      "sync_sntp_port": {
+        "name": "Порт NTP-сервера"
+      },
+      "sync_sntp_time": {
+        "name": "Період синхронізації NTP"
+      },
+      "cloud_port": {
+        "name": "Порт сервера хмари"
+      },
+      "external_meter_set": {
+        "name": "Встановити показання зовнішнього лічильника"
+      }
+    },
+    "select": {
+      "volt_count_apv": {
+        "name": "Кількість спроб АПВ за напругою"
+      },
+      "cur_count_apv": {
+        "name": "Кількість спроб АПВ за струмом"
+      },
+      "pow_count_apv": {
+        "name": "Кількість спроб АПВ за потужністю"
+      },
+      "freq_count_apv": {
+        "name": "Кількість спроб АПВ за частотою"
+      },
+      "cost_unit": {
+        "name": "Валюта"
+      }
+    },
+    "button": {
+      "energy_reset": {
+        "name": "Скинути лічильники енергії"
+      },
+      "set_time": {
+        "name": "Встановити час з Home Assistant"
+      },
+      "ntp_sync": {
+        "name": "Запустити синхронізацію NTP"
+      },
+      "reboot": {
+        "name": "Перезавантажити пристрій"
+      },
+      "cancel_auto_on": {
+        "name": "Скасувати автоввімкнення"
+      }
+    },
+    "datetime": {
+      "hctrl_from": {
+        "name": "Початок відпустки"
+      },
+      "hctrl_to": {
+        "name": "Кінець відпустки"
+      }
+    },
+    "text": {
+      "sync_sntp_address": {
+        "name": "Адреса NTP-сервера"
+      },
+      "cloud_address": {
+        "name": "Адреса сервера хмари"
+      }
+    }
+  }
+}
