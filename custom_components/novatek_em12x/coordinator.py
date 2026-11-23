@@ -13,6 +13,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import EMAuthError, EMError
+from .auto_on import AutoOnManager
 from .catchup import JournalCatchup
 from .const import (
     CONF_SYNC_TIME,
@@ -67,6 +68,7 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         self._poll_count = 0
         self._last_time_sync = 0.0
         self.catchup = JournalCatchup(hass, entry)
+        self.auto_on = AutoOnManager(hass, entry, client, self)
         self._journals_started = False
 
     @property
@@ -120,6 +122,12 @@ class NovatekEMCoordinator(DataUpdateCoordinator[EMData]):
         except Exception:
             _LOGGER.exception("Journal catch-up failed")
         self._journals_started = True
+
+        relay_on = bool(int(measurements.get("sys_flag", 0)) >> 4 & 1)
+        try:
+            await self.auto_on.async_poll_check(relay_on)
+        except Exception:
+            _LOGGER.exception("Auto-on check failed")
 
         await self._maybe_sync_time()
         return EMData(

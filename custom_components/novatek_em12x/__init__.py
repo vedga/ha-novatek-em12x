@@ -50,6 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: NovatekEMConfigEntry) ->
     coordinator = NovatekEMCoordinator(hass, entry, client)
 
     await coordinator.async_config_entry_first_refresh()
+    await coordinator.auto_on.async_restore()
 
     entry.runtime_data = NovatekEMRuntimeData(client, coordinator)
     entry.async_on_unload(entry.add_update_listener(options_update_listener))
@@ -61,6 +62,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: NovatekEMConfigEntry) -
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
+        await entry.runtime_data.coordinator.auto_on.async_shutdown()
         await entry.runtime_data.client.close()
     return unload_ok
 

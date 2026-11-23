@@ -24,10 +24,19 @@ from homeassistant.helpers.selector import (
 
 from .api import EMApiClient, EMAuthError, EMError, decode_setting_str
 from .const import (
+    CONF_AUTO_ON_DELAY,
+    CONF_AUTO_ON_DURATION,
+    CONF_AUTO_ON_ENABLED,
     CONF_SYNC_TIME,
+    DEFAULT_AUTO_ON_DELAY,
+    DEFAULT_AUTO_ON_DURATION,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    MAX_AUTO_ON_DELAY,
+    MAX_AUTO_ON_DURATION,
     MAX_SCAN_INTERVAL,
+    MIN_AUTO_ON_DELAY,
+    MIN_AUTO_ON_DURATION,
     MIN_SCAN_INTERVAL,
     MODEL_NAMES,
 )
@@ -242,6 +251,20 @@ class NovatekEMOptionsFlow(OptionsFlow):
             CONF_SYNC_TIME,
             self.config_entry.data.get(CONF_SYNC_TIME, True),
         )
+        current_auto_on = self.config_entry.options.get(
+            CONF_AUTO_ON_ENABLED,
+            self.config_entry.data.get(CONF_AUTO_ON_ENABLED, False),
+        )
+        current_delay = self.config_entry.options.get(
+            CONF_AUTO_ON_DELAY,
+            self.config_entry.data.get(CONF_AUTO_ON_DELAY, DEFAULT_AUTO_ON_DELAY),
+        )
+        current_duration = self.config_entry.options.get(
+            CONF_AUTO_ON_DURATION,
+            self.config_entry.data.get(
+                CONF_AUTO_ON_DURATION, DEFAULT_AUTO_ON_DURATION
+            ),
+        )
         schema = vol.Schema(
             {
                 vol.Required(
@@ -256,6 +279,31 @@ class NovatekEMOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Required(CONF_SYNC_TIME, default=current_sync): BooleanSelector(),
+                vol.Required(
+                    CONF_AUTO_ON_ENABLED, default=current_auto_on
+                ): BooleanSelector(),
+                vol.Required(
+                    CONF_AUTO_ON_DELAY, default=int(current_delay)
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=MIN_AUTO_ON_DELAY,
+                        max=MAX_AUTO_ON_DELAY,
+                        step=1,
+                        unit_of_measurement="min",
+                        mode=NumberSelectorMode.BOX,
+                    )
+                ),
+                vol.Required(
+                    CONF_AUTO_ON_DURATION, default=int(current_duration)
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=MIN_AUTO_ON_DURATION,
+                        max=MAX_AUTO_ON_DURATION,
+                        step=1,
+                        unit_of_measurement="h",
+                        mode=NumberSelectorMode.BOX,
+                    )
+                ),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

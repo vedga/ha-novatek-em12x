@@ -5,6 +5,9 @@ MANUFACTURER = "Novatek Electro"
 
 CONF_PASSWORD = "password"
 CONF_SYNC_TIME = "sync_time"
+CONF_AUTO_ON_ENABLED = "auto_on_enabled"
+CONF_AUTO_ON_DELAY = "auto_on_delay"
+CONF_AUTO_ON_DURATION = "auto_on_duration"
 
 DEFAULT_SCAN_INTERVAL = 30
 MIN_SCAN_INTERVAL = 5
@@ -12,6 +15,12 @@ MAX_SCAN_INTERVAL = 300
 DEFAULT_SETTINGS_EVERY = 5
 TIME_SYNC_INTERVAL = 3600
 CATCHUP_MIN_INTERVAL = 30
+DEFAULT_AUTO_ON_DELAY = 10
+DEFAULT_AUTO_ON_DURATION = 24
+MIN_AUTO_ON_DELAY = 1
+MAX_AUTO_ON_DELAY = 1440
+MIN_AUTO_ON_DURATION = 1
+MAX_AUTO_ON_DURATION = 24
 EVENT_NAME_MAX = 100
 
 MODEL_NAMES = {
@@ -189,3 +198,8 @@ def energy_cost(
         return round((int(energy_wh) / 1000) * (int(tariff_milli) / 1000), 3)
     except (TypeError, ValueError):
         return None
+
+
+def device_local_epoch(now_utc: int, gmt_seconds: int) -> int:
+    """Convert a UTC epoch to the device local epoch used by its schedule."""
+    return int(now_utc) + int(gmt_seconds)

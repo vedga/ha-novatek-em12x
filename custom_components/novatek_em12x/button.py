@@ -34,6 +34,12 @@ BUTTONS: tuple[ButtonEntityDescription, ...] = (
         icon="mdi:clock-check-outline",
     ),
     ButtonEntityDescription(
+        key="cancel_auto_on",
+        translation_key="cancel_auto_on",
+        entity_category=EntityCategory.CONFIG,
+        icon="mdi:timer-remove-outline",
+    ),
+    ButtonEntityDescription(
         key="reboot",
         translation_key="reboot",
         entity_category=EntityCategory.CONFIG,
@@ -75,6 +81,8 @@ class NovatekEMButtonEntity(NovatekEMEntity, ButtonEntity):
                 await client.sync_clock()
             elif key == "reboot":
                 await client.reboot()
+            elif key == "cancel_auto_on":
+                await self.coordinator.auto_on.async_cancel()
         except EMError as err:
             _LOGGER.error("Button %s failed: %s", key, err)
         if key in ("energy_reset", "set_time"):

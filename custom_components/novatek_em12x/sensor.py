@@ -203,6 +203,13 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         icon="mdi:database-arrow-down",
     ),
     SensorEntityDescription(
+        key="auto_on_at",
+        translation_key="auto_on_at",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:timer-lock-open-outline",
+    ),
+    SensorEntityDescription(
         key="tariff",
         translation_key="tariff",
         icon="mdi:cash",
@@ -293,6 +300,11 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if not record:
                 return None
             return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "auto_on_at":
+            deadline = self.coordinator.auto_on.deadline
+            if deadline is None:
+                return None
+            return datetime.fromtimestamp(int(deadline), tz=dt_util.UTC)
         if key == "journal_missed":
             return self.coordinator.data.journal_missed
         if key == "tariff":
@@ -366,6 +378,11 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
             if not record:
                 return None
             return datetime.fromtimestamp(int(record["timestamp"]), tz=dt_util.UTC)
+        if key == "auto_on_at":
+            deadline = self.coordinator.auto_on.deadline
+            if deadline is None:
+                return None
+            return datetime.fromtimestamp(int(deadline), tz=dt_util.UTC)
         if key == "journal_missed":
             return self.coordinator.data.journal_missed
         if key == "tariff":

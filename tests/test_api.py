@@ -223,3 +223,10 @@ async def test_cloud_address_and_port(device, session):
     assert await client.get("cloud_port") == "1234"
     await client.set_setting("cloud_port", 20504)
     await client.close()
+
+
+def test_device_local_epoch():
+    from novatek_em12x.const import device_local_epoch
+
+    assert device_local_epoch(1000, 10800) == 11800
+    assert device_local_epoch(0, 0) == 0

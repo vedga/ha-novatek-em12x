@@ -37,7 +37,10 @@
       "init": {
         "data": {
           "scan_interval": "Poll interval (seconds)",
-          "sync_time": "Synchronize device clock with Home Assistant"
+          "sync_time": "Synchronize device clock with Home Assistant",
+          "auto_on_enabled": "Safety auto-on after manual switch-off",
+          "auto_on_delay": "Auto-on delay (minutes)",
+          "auto_on_duration": "On-device backup duration (hours)"
         }
       }
     },
@@ -132,6 +135,9 @@
       },
       "journal_missed": {
         "name": "Journal records on reconnect"
+      },
+      "auto_on_at": {
+        "name": "Auto-on at"
       }
     },
     "binary_sensor": {
@@ -331,6 +337,9 @@
       },
       "reboot": {
         "name": "Reboot device"
+      },
+      "cancel_auto_on": {
+        "name": "Cancel auto-on"
       }
     },
     "datetime": {
