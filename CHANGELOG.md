@@ -8,6 +8,8 @@
   reset, persisted across restarts, novatek_em12x_billing bus event
 - fix: reclose countdown sensor rescales ar_time from device milliseconds to
   seconds (documentation wrongly says seconds)
+- docs: frequency protection test results (high/low threshold bits, continuous
+  out-of-range behaviour, fault clearing without reboot)
 
 ## 1.7.0
 
