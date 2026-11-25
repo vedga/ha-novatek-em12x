@@ -30,11 +30,13 @@ from .const import (
     CONF_AUTO_ON_EXTERNAL,
     CONF_AUTO_ON_HORIZON,
     CONF_AUTO_ON_RETRY,
+    CONF_BILLING_AUTO_TUNE,
     CONF_SYNC_TIME,
     DEFAULT_AUTO_ON_DAYS,
     DEFAULT_AUTO_ON_DELAY,
     DEFAULT_AUTO_ON_HORIZON,
     DEFAULT_AUTO_ON_RETRY,
+    DEFAULT_BILLING_AUTO_TUNE,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MAX_AUTO_ON_DAYS,
@@ -336,6 +338,12 @@ class NovatekEMOptionsFlow(OptionsFlow):
                         mode=NumberSelectorMode.BOX,
                     )
                 ),
+                vol.Required(
+                    CONF_BILLING_AUTO_TUNE,
+                    default=bool(
+                        current(CONF_BILLING_AUTO_TUNE, DEFAULT_BILLING_AUTO_TUNE)
+                    ),
+                ): BooleanSelector(),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

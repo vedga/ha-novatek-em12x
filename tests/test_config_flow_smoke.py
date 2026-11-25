@@ -123,6 +123,7 @@ def test_options_flow_builds_schema():
         "auto_on_external",
         "auto_on_retry",
         "auto_on_horizon",
+        "billing_auto_tune",
     }
 
 
@@ -140,6 +141,7 @@ def test_options_flow_accepts_defaults_submission():
                 "auto_on_external": False,
                 "auto_on_retry": 10,
                 "auto_on_horizon": 1,
+                "billing_auto_tune": True,
             }
         )
     )

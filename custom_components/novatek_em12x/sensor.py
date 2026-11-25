@@ -339,6 +339,8 @@ class NovatekEMSensorEntity(NovatekEMEntity, SensorEntity):
                 "base_kwh": billing.base_kwh,
                 "device_wh_at_base": billing.device_wh_at_base,
                 "updated_at": billing.updated_at,
+                "self_power_w": billing.self_power_w,
+                "calibration_pct": billing.calibration_pct,
             }
         if self.entity_description.key == "last_event":
             record = self.coordinator.data.last_syslog

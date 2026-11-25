@@ -43,7 +43,8 @@
           "auto_on_external": "Auto-włączenie po wyłączeniu poza Home Assistant",
           "auto_on_retry": "Interwał ponowień przy wyłączeniu zewnętrznym (minuty)",
           "auto_on_horizon": "Okno ponowień przy wyłączeniu zewnętrznym (godziny)",
-          "auto_on_days": "Rezerwa w urządzeniu (dni)"
+          "auto_on_days": "Rezerwa w urządzeniu (dni)",
+          "billing_auto_tune": "Automatyczna korekta współczynników na podstawie odczytów licznika zewnętrznego"
         }
       }
     },
@@ -318,6 +319,12 @@
       },
       "external_meter_set": {
         "name": "Ustaw odczyt licznika zewnętrznego"
+      },
+      "billing_self_power": {
+        "name": "Pobór własny (rozliczenie)"
+      },
+      "billing_calibration": {
+        "name": "Współczynnik rozliczeniowy"
       }
     },
     "select": {

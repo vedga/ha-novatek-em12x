@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import (
+    PERCENTAGE,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
     UnitOfEnergy,
@@ -17,6 +18,12 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import EntityCategory
 
 from .api import EMError
+from .const import (
+    MAX_BILLING_CALIBRATION,
+    MAX_BILLING_SELF_POWER,
+    MIN_BILLING_CALIBRATION,
+    MIN_BILLING_SELF_POWER,
+)
 from .coordinator import NovatekEMCoordinator
 from .entity import NovatekEMEntity
 
@@ -70,6 +77,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
         for param, spec in NUMBER_SPECS.items()
     ]
     entities.append(NovatekEMBillingNumber(coordinator))
+    entities.append(NovatekEMBillingSelfPowerNumber(coordinator))
+    entities.append(NovatekEMBillingCalibrationNumber(coordinator))
     async_add_entities(entities)
 
 
@@ -154,3 +163,49 @@ class NovatekEMBillingNumber(NovatekEMEntity, NumberEntity):
         if device_wh is None:
             device_wh = self.coordinator.billing.last_device_wh or 0
         await self.coordinator.billing.async_set_reading(value, int(device_wh))
+
+
+class NovatekEMBillingSelfPowerNumber(NovatekEMEntity, NumberEntity):
+    """Estimated device self-consumption used by the billing model."""
+
+    _attr_mode = NumberMode.BOX
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_min_value = MIN_BILLING_SELF_POWER
+    _attr_native_max_value = MAX_BILLING_SELF_POWER
+    _attr_native_step = 0.1
+    _attr_native_unit_of_measurement = UnitOfPower.WATT
+    _attr_translation_key = "billing_self_power"
+    _attr_icon = "mdi:chip"
+
+    def __init__(self, coordinator: NovatekEMCoordinator) -> None:
+        super().__init__(coordinator, "number_billing_self_power")
+
+    @property
+    def native_value(self) -> float | None:
+        return self.coordinator.billing.self_power_w
+
+    async def async_set_native_value(self, value: float) -> None:
+        await self.coordinator.billing.async_set_self_power(value)
+
+
+class NovatekEMBillingCalibrationNumber(NovatekEMEntity, NumberEntity):
+    """Calibration factor of the device energy counter (%)."""
+
+    _attr_mode = NumberMode.BOX
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_min_value = MIN_BILLING_CALIBRATION
+    _attr_native_max_value = MAX_BILLING_CALIBRATION
+    _attr_native_step = 0.1
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_translation_key = "billing_calibration"
+    _attr_icon = "mdi:tune-vertical"
+
+    def __init__(self, coordinator: NovatekEMCoordinator) -> None:
+        super().__init__(coordinator, "number_billing_calibration")
+
+    @property
+    def native_value(self) -> float | None:
+        return self.coordinator.billing.calibration_pct
+
+    async def async_set_native_value(self, value: float) -> None:
+        await self.coordinator.billing.async_set_calibration(value)

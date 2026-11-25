@@ -43,7 +43,8 @@
           "auto_on_external": "Auto-on when switched off outside Home Assistant",
           "auto_on_retry": "Retry interval for external switch-off (minutes)",
           "auto_on_horizon": "Retry window for external switch-off (hours)",
-          "auto_on_days": "On-device reserve (days)"
+          "auto_on_days": "On-device reserve (days)",
+          "billing_auto_tune": "Automatically adjust billing coefficients from external meter corrections"
         }
       }
     },
@@ -318,6 +319,12 @@
       },
       "external_meter_set": {
         "name": "Set external meter reading"
+      },
+      "billing_self_power": {
+        "name": "Billing self-consumption"
+      },
+      "billing_calibration": {
+        "name": "Billing calibration factor"
       }
     },
     "select": {
