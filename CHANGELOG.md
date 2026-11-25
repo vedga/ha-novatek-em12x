@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.9.0
+
+- feat(billing): the external meter model now compensates for the device
+  self-consumption (Wi-Fi electronics, ~0.5–1 W, invisible to the device's own
+  counter) and for its measurement error versus the commercial meter
+- new diagnostic number entities (editable from the dashboard, excluded from
+  default dashboard views): "Billing self-consumption" (W, 0–20 — the actual
+  draw depends on the power supply efficiency and the relay coil, the range is
+  a sanity guard, the regression finds the true value) and
+  "Billing calibration factor" (%; −5…+5, scales the counter increment)
+- each external meter correction records the divergence from the model
+  prediction; from three corrections on, the coefficients are re-fitted by
+  linear regression when the "auto-tune" option is enabled (default on)
+  — inseparable data (proportional time/energy) skips the refit, suggested
+  values are published in the `novatek_em12x_billing` event
+  (`residual_kwh`, `suggested_self_power_w`, `suggested_calibration_pct`)
+- manual coefficient edits reset the regression history; device counter resets
+  restart it too; the external meter sensor gained `self_power_w` and
+  `calibration_pct` attributes — 100 entities total, 64 tests
+
 ## 1.8.9
 
 - fix: the reconfigure and reauth flows now persist the device MAC as the
